@@ -52,6 +52,32 @@ CREATE POLICY "Users can insert their own progress" ON public.progress FOR INSER
 CREATE POLICY "Users can view their own game history" ON public.game_history FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own game history" ON public.game_history FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+-- 4. QUIZ SYSTEM (Support for Soal Cerita)
+CREATE TABLE IF NOT EXISTS public.quiz_contexts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.quiz_questions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  context_id UUID REFERENCES public.quiz_contexts(id) ON DELETE CASCADE,
+  topik_id TEXT,
+  question_text TEXT NOT NULL,
+  options JSONB NOT NULL, -- Array of strings
+  correct_answer TEXT NOT NULL, -- The text of the correct option
+  explanation TEXT,
+  difficulty TEXT CHECK (difficulty IN ('mudah', 'sedang', 'susah')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.quiz_contexts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read on quiz_contexts" ON public.quiz_contexts FOR SELECT USING (true);
+CREATE POLICY "Allow public read on quiz_questions" ON public.quiz_questions FOR SELECT USING (true);
+
 -- TRIGGER for new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$

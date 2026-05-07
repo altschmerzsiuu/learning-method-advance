@@ -14,20 +14,53 @@ function shuffleArray(array) {
 export function useQuiz(topikId) {
   const topikQuiz = quizData.find(q => q.topik_id === topikId);
   
-  // Initialize state with shuffled questions and shuffled options
+  // Initialize state with grouped and shuffled questions
   const [sessionSoal, setSessionSoal] = useState(() => {
     const originalSoal = topikQuiz?.soal ?? [];
-    // Shuffle question order
-    const shuffledQuestions = shuffleArray(originalSoal);
     
-    // For each question, shuffle its options
-    return shuffledQuestions.map(q => {
-      // Strip letters "A. ", "B. ", etc if they exist to shuffle purely the content
+    // 1. Group questions by context (if any)
+    const grouped = [];
+    const contextMap = new Map();
+
+    originalSoal.forEach(q => {
+      if (q.context) {
+        if (!contextMap.has(q.context)) {
+          contextMap.set(q.context, []);
+          grouped.push({ type: 'context', context: q.context, questions: contextMap.get(q.context) });
+        }
+        contextMap.get(q.context).push(q);
+      } else {
+        grouped.push({ type: 'standalone', question: q });
+      }
+    });
+
+    // 2. Shuffle the groups
+    const shuffledGroups = shuffleArray(grouped);
+
+    // 3. Select groups until we have ~20 questions
+    const selectedQuestions = [];
+    let count = 0;
+    const MAX_SOAL = 20;
+
+    for (const item of shuffledGroups) {
+      if (count >= MAX_SOAL) break;
+
+      if (item.type === 'context') {
+        item.questions.forEach(q => {
+          selectedQuestions.push(q);
+          count++;
+        });
+      } else {
+        selectedQuestions.push(item.question);
+        count++;
+      }
+    }
+
+    // 4. Process selected questions (shuffle options, set correct text)
+    return selectedQuestions.map(q => {
       const cleanPilihan = q.pilihan.map(p => p.replace(/^[A-D]\.\s+/, ''));
       const shuffledOptions = shuffleArray(cleanPilihan);
-      
-      // Find the text of the correct answer from original letter
-      const originalCorrectLetter = q.jawaban_benar; // e.g. "B"
+      const originalCorrectLetter = q.jawaban_benar;
       const correctText = q.pilihan.find(p => p.startsWith(originalCorrectLetter + '.'))?.replace(/^[A-D]\.\s+/, '');
 
       return {
