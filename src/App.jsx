@@ -20,6 +20,7 @@ import EditProfilScreen from './screens/EditProfilScreen';
 import LoginScreen     from './screens/LoginScreen';
 import RegisterScreen  from './screens/RegisterScreen';
 import ProtectedRoute  from './components/auth/ProtectedRoute';
+import BadgeToast      from './components/profil/BadgeToast';
 
 function AppRoutes() {
   const location = useLocation();
@@ -54,7 +55,7 @@ function AppRoutes() {
   );
 }
 
-import BadgeToast      from './components/profil/BadgeToast';
+
 
 export default function App() {
   return (
