@@ -41,33 +41,18 @@ export default function RegisterScreen() {
       });
 
       if (data?.user) {
-        const userId = data.user.id;
-        
-        // 2. Insert profile (Note: Supabase might have a trigger doing this, but prompt explicitly said: "Insert row ke tabel profiles")
-        // If trigger is still there, this might fail, let's upsert to be safe.
-        await supabase.from('profiles').upsert({
-          id: userId,
-          nama: formData.nama,
-          kelas: formData.kelas,
-          sekolah: formData.sekolah
-        });
-
-        // 3. Insert user_streak
-        await supabase.from('user_streak').insert({
-          user_id: userId,
-          streak_count: 0,
-          total_xp: 0
-        });
-
-        // 4. Insert user_progress for all topics
-        const progressInserts = materiData.map((topik, i) => ({
-          user_id: userId,
-          topik_id: topik.id,
-          status: i === 0 ? 'active' : 'locked'
-        }));
-        await supabase.from('user_progress').insert(progressInserts);
-
-        navigate('/home', { replace: true });
+        if (data.session) {
+          // If Confirm Email is OFF, session exists.
+          navigate('/home', { replace: true });
+        } else {
+          // If Confirm Email is ON, session is null.
+          setError('Registrasi berhasil! Silakan cek email Anda untuk konfirmasi sebelum Masuk.');
+          // Don't navigate, let them read the message. Or we could navigate to /login.
+          // Let's just reset the form and show success message using the error state but styled differently, 
+          // or just navigate to login with a query param. 
+          // Simplest is to just navigate to login.
+          setTimeout(() => navigate('/login'), 2000);
+        }
       }
     } catch (err) {
       setError(err.message || 'Gagal mendaftar. Silakan coba lagi.');

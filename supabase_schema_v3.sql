@@ -133,6 +133,8 @@ DROP POLICY IF EXISTS "Users can insert their own badges" ON public.user_badges;
 -- Re-create policies
 CREATE POLICY "Users can view their own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can insert their own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+
 
 CREATE POLICY "Users can view their own streak" ON public.user_streak FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can update their own streak" ON public.user_streak FOR UPDATE USING (auth.uid() = user_id);
@@ -149,3 +151,41 @@ CREATE POLICY "Allow public read on badges" ON public.badges FOR SELECT USING (t
 
 CREATE POLICY "Users can view their own badges" ON public.user_badges FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own badges" ON public.user_badges FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- =====================
+-- DATABASE TRIGGERS
+-- =====================
+-- Handle automatic profile and progress creation on user sign up
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  -- 1. Insert profile
+  INSERT INTO public.profiles (id, nama, kelas, sekolah)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'nama', 'Siswa'),
+    COALESCE(NEW.raw_user_meta_data->>'kelas', 'VII'),
+    COALESCE(NEW.raw_user_meta_data->>'sekolah', '')
+  );
+
+  -- 2. Insert streak
+  INSERT INTO public.user_streak (user_id, streak_count, total_xp)
+  VALUES (NEW.id, 0, 0);
+
+  -- 3. Insert progress for all topics
+  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'tesis', 'active');
+  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'argumentasi', 'locked');
+  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'penegasan', 'locked');
+  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'kaidah', 'locked');
+  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'langkah', 'locked');
+  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'contoh', 'locked');
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Recreate trigger
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
