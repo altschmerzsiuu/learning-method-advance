@@ -38,7 +38,7 @@ export default function TopBar({
           <div className="flex items-center gap-2">
             <img src="/logo-fkip.jpg" alt="Logo FKIP" className="h-8 w-auto object-contain" />
             <span className="font-serif font-black text-lg text-ink italic leading-none">
-              explay<span className="text-primary-500">.</span>
+              explay<span className="text-primary-300">.</span>
             </span>
           </div>
         )}

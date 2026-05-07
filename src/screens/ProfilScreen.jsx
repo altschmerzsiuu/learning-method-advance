@@ -1,79 +1,121 @@
-// src/screens/ProfilScreen.jsx
-import { Flame, Zap, Target, BookOpen, Star } from 'lucide-react';
-import { PageWrapper, TopBar, BottomNav } from '../components/ui';
-import { useStreak }   from '../hooks/useStreak';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PageWrapper, TopBar, BottomNav, Button } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 import { useProgress } from '../hooks/useProgress';
+import { supabase } from '../lib/supabase';
+import { Edit2, LogOut, Camera } from 'lucide-react';
 
 export default function ProfilScreen() {
-  const { streak, totalXP, level, levelLabel, weekDots } = useStreak();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { profile, streak, loading: profileLoading } = useProfile(user?.id);
   const { getCompletedCount } = useProgress();
+  
+  const [badges, setBadges] = useState([]);
+  const [userBadgeIds, setUserBadgeIds] = useState([]);
 
-  const stats = [
-    { icon: Zap,     label: 'Total XP',       value: totalXP,              color: 'text-accent' },
-    { icon: Flame,   label: 'Streak',          value: `${streak} hari`,     color: 'text-orange-500' },
-    { icon: BookOpen,label: 'Topik Selesai',   value: getCompletedCount(),  color: 'text-primary-500' },
-    { icon: Star,    label: 'Level',           value: `${level} - ${levelLabel}`, color: 'text-yellow-500' },
-  ];
+  useEffect(() => {
+    async function loadBadges() {
+      if (!user) return;
+      const { data: allBadges } = await supabase.from('badges').select('*');
+      const { data: uBadges } = await supabase.from('user_badges').select('badge_id').eq('user_id', user.id);
+      
+      setBadges(allBadges || []);
+      setUserBadgeIds((uBadges || []).map(b => b.badge_id));
+    }
+    loadBadges();
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login', { replace: true });
+  };
+
+  if (profileLoading) return <div className="p-6 text-center">Memuat profil...</div>;
+
+  const totalXP = streak?.total_xp || 0;
+  const level = Math.floor(totalXP / 500) + 1;
+  const streakCount = streak?.streak_count || 0;
 
   return (
-    <PageWrapper>
+    <PageWrapper bottomNav>
       <TopBar title="Profil" />
 
-      <div className="px-4 pb-28 pt-5 flex flex-col gap-5">
-
-        {/* Avatar section */}
-        <div className="flex flex-col items-center py-8 bg-primary-500 border border-primary-600 rounded-lg batik-overlay text-white">
-          <div className="w-20 h-20 rounded-full bg-white/20 border-4 border-white/30 flex items-center justify-center mb-3 backdrop-blur-md">
-            <img src="/explay-logo.png" alt="EksposiLab" className="w-14 h-14 object-contain brightness-0 invert" onError={(e) => { e.target.style.display='none'; }} />
-          </div>
-          <h2 className="font-serif text-[22px] font-black italic tracking-tight">Pelajar EksposiLab</h2>
-          <div className="flex items-center gap-1.5 mt-1">
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="font-sans text-[12px] font-bold text-white/80">Level {level} · {levelLabel}</span>
-          </div>
-        </div>
-
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 gap-2.5">
-          {stats.map(({ icon: Icon, label, value, color }) => (
-            <div key={label} className="bg-surface-card border border-border rounded-md p-4">
-              <Icon size={18} strokeWidth={1.5} className={`${color} mb-2`} />
-              <p className="font-serif text-[22px] font-black text-ink leading-none">{value}</p>
-              <p className="font-sans text-[11px] text-ink-muted mt-1">{label}</p>
+      <div className="container py-6 flex flex-col gap-6 px-4">
+        
+        {/* Avatar Section */}
+        <div className="flex flex-col items-center">
+          <div className="w-[80px] h-[80px] rounded-full border-[3px] border-transparent bg-gradient-to-tr from-primary-300 to-secondary p-0.5 relative mb-3">
+            <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-3xl">👤</span>
+              )}
             </div>
-          ))}
-        </div>
-
-        {/* Streak calendar */}
-        <div className="bg-surface-card border border-border rounded-md p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Flame size={16} strokeWidth={1.5} className="text-accent" />
-            <h3 className="font-sans text-[13px] font-bold text-ink">Aktivitas 7 Hari Terakhir</h3>
+            <button
+              onClick={() => navigate('/profil/edit')}
+              className="absolute bottom-0 right-0 bg-surface-card border border-border rounded-full p-1.5 shadow-none"
+            >
+              <Camera size={12} className="text-ink" />
+            </button>
           </div>
-          <div className="flex gap-2">
-            {weekDots.map((dot, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                <div className={`w-full h-8 rounded-md ${dot.isActive ? 'bg-primary-500' : 'bg-surface-muted border border-border'}`} />
-                <span className="font-sans text-[9px] text-ink-faint">
-                  {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'][i]}
-                </span>
-              </div>
-            ))}
+          <h2 className="font-serif font-bold text-xl text-ink leading-none">{profile?.nama || 'Pelajar'}</h2>
+          <p className="font-sans text-sm text-ink-muted mt-1">Kelas {profile?.kelas || 'VII'} • {profile?.sekolah || 'Belum diatur'}</p>
+          <div className="bg-primary-50 border border-primary-200 text-primary-600 px-3 py-1 rounded-full text-xs font-bold mt-2 uppercase tracking-wide">
+            Level {level}
           </div>
         </div>
 
-        {/* About app */}
-        <div className="bg-surface-card border border-border rounded-md p-4 flex items-center gap-3">
-          <img src="/fkip-logo.jpeg" alt="FKIP" className="w-10 h-10 object-contain rounded" onError={(e) => { e.target.style.display='none'; }} />
-          <div>
-            <p className="font-sans text-[12px] font-bold text-ink">EksposiLab v1.0</p>
-            <p className="font-sans text-[11px] text-ink-muted">Media Pembelajaran Teks Eksposisi SMP · Skripsi FKIP</p>
+        {/* StatGrid 2x2 */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-surface-card border border-border rounded-xl p-4 flex flex-col items-center">
+            <p className="font-serif font-black text-2xl text-accent mb-1">{totalXP}</p>
+            <p className="font-sans text-xs text-ink-muted">XP Total</p>
           </div>
+          <div className="bg-surface-card border border-border rounded-xl p-4 flex flex-col items-center">
+            <p className="font-serif font-black text-2xl text-primary-300 mb-1">{level}</p>
+            <p className="font-sans text-xs text-ink-muted">Level</p>
+          </div>
+          <div className="bg-surface-card border border-border rounded-xl p-4 flex flex-col items-center">
+            <p className="font-serif font-black text-2xl text-secondary mb-1">{streakCount} 🔥</p>
+            <p className="font-sans text-xs text-ink-muted">Streak</p>
+          </div>
+          <div className="bg-surface-card border border-border rounded-xl p-4 flex flex-col items-center">
+            <p className="font-serif font-black text-2xl text-ink mb-1">{getCompletedCount()}</p>
+            <p className="font-sans text-xs text-ink-muted">Quiz Selesai</p>
+          </div>
+        </div>
+
+        {/* BadgeSection */}
+        <div>
+          <h3 className="font-serif font-bold text-lg mb-3">Pencapaian</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {badges.map(b => {
+              const isEarned = userBadgeIds.includes(b.id);
+              return (
+                <div key={b.id} className={`flex flex-col items-center text-center p-3 rounded-xl border ${isEarned ? 'bg-accent-light border-accent-border' : 'bg-surface-muted border-border grayscale opacity-60'}`}>
+                  <span className="text-3xl mb-2">{b.icon}</span>
+                  <p className="font-sans text-[10px] font-bold text-ink leading-tight">{b.nama}</p>
+                  {!isEarned && <span className="text-[10px] text-ink-muted mt-1">🔒</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 mt-4">
+          <Button variant="ghost" fullWidth onClick={() => navigate('/profil/edit')} className="flex gap-2">
+            <Edit2 size={16} /> Edit Profil
+          </Button>
+          <Button variant="danger" fullWidth onClick={handleLogout} className="flex gap-2 bg-rose-50 text-rose-600 border-none hover:bg-rose-100">
+            <LogOut size={16} /> Keluar
+          </Button>
         </div>
 
       </div>
-
-      <BottomNav />
     </PageWrapper>
   );
 }

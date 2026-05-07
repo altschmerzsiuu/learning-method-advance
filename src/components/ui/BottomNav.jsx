@@ -24,7 +24,7 @@ export default function BottomNav() {
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
                 isActive
-                  ? 'text-primary-500'
+                  ? 'text-primary-300'
                   : 'text-ink-muted'
               }`
             }

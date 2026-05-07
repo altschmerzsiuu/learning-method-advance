@@ -39,7 +39,7 @@ export default function GameSetupScreen() {
 
         <div className="flex flex-col gap-4">
           <Card 
-            className={`cursor-pointer transition-all border-2 ${mode === 'solo' ? 'border-primary-500 bg-primary-50/30' : 'border-transparent'}`}
+            className={`cursor-pointer transition-all border-2 ${mode === 'solo' ? 'border-primary-300 bg-primary-50/30' : 'border-transparent'}`}
             onClick={() => setMode('solo')}
           >
             <div className="flex flex-col gap-2">
@@ -50,13 +50,13 @@ export default function GameSetupScreen() {
                 <div className="flex gap-2 mt-2">
                   <button 
                     onClick={(e) => { e.stopPropagation(); setDifficulty('mudah'); }}
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${difficulty === 'mudah' ? 'bg-primary-500 text-white' : 'bg-surface-muted text-ink-muted'}`}
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${difficulty === 'mudah' ? 'bg-primary-300 text-white' : 'bg-surface-muted text-ink-muted'}`}
                   >
                     Mudah
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setDifficulty('susah'); }}
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${difficulty === 'susah' ? 'bg-primary-500 text-white' : 'bg-surface-muted text-ink-muted'}`}
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${difficulty === 'susah' ? 'bg-primary-300 text-white' : 'bg-surface-muted text-ink-muted'}`}
                   >
                     Susah
                   </button>
@@ -85,7 +85,7 @@ export default function GameSetupScreen() {
             value={teamX}
             onChange={(e) => setTeamX(e.target.value)}
             placeholder="Masukkan nama..."
-            className="w-full px-4 py-3 bg-surface-card border border-border rounded-xl font-sans text-sm focus:border-primary-500 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-surface-card border border-border rounded-xl font-sans text-sm focus:border-primary-300 focus:outline-none transition-colors"
           />
         </div>
 

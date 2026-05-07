@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import { Button } from '../components/ui';
 import { supabase } from '../lib/supabase';
+import { checkAndAwardBadges, triggerBadgeToast } from '../lib/badgeChecker';
 
 function hitungXP(mode, result, difficulty) {
   if (mode === 'team') {
@@ -67,6 +68,12 @@ export default function GameHasilScreen() {
         if (profile) {
           await supabase.from('profiles').update({ total_xp: profile.total_xp + earnedXp }).eq('id', session.user.id);
         }
+
+        // Badges check
+        if (resultStr === 'menang') {
+          const newBadges = await checkAndAwardBadges(session.user.id, { type: 'game_win', value: 1 });
+          newBadges.forEach(b => triggerBadgeToast(b));
+        }
       }
     };
     saveResult();
@@ -89,7 +96,7 @@ export default function GameHasilScreen() {
     }
   } else {
     title = `🏆 Tim ${winner} Menang!`;
-    color = winner === 'X' ? 'text-primary-500' : 'text-rose-500';
+    color = winner === 'X' ? 'text-primary-300' : 'text-rose-500';
   }
 
   const isWin = winner && winner !== 'draw';
@@ -103,7 +110,7 @@ export default function GameHasilScreen() {
           {title}
         </h1>
 
-        <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-xl border-4 border-surface-muted relative">
+        <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-none-none border-4 border-surface-muted relative">
           {isWin ? (
             <video
               src={`/videos/${randomVideo}`}

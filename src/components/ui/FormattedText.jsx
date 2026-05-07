@@ -19,7 +19,7 @@ export default function FormattedText({ text }) {
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return (
-            <strong key={i} className="font-extrabold text-ink drop-shadow-[0_0_0.1px_rgba(0,0,0,0.1)]">
+            <strong key={i} className="font-extrabold text-ink drop-shadow-none-[0_0_0.1px_rgba(0,0,0,0.1)]">
               {part.slice(2, -2)}
             </strong>
           );

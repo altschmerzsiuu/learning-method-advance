@@ -1,15 +1,9 @@
-// src/hooks/useProgress.js
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from './useAuth';
 import materiData from '../data/materi.json';
 
-const STORAGE_KEY = 'eksposilab_progress';
-
-function getLocalProgress() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
+function getInitialProgress() {
   return materiData.reduce((acc, topik, idx) => {
     acc[topik.id] = { status: idx === 0 ? 'active' : 'locked', xp_earned: 0 };
     return acc;
@@ -17,72 +11,69 @@ function getLocalProgress() {
 }
 
 export function useProgress() {
-  const [progress, setProgress] = useState(getLocalProgress);
-  const [user, setUser] = useState(null);
+  const [progress, setProgress] = useState(getInitialProgress());
+  const { user } = useAuth();
 
-  useEffect(() => {
-    supabase?.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-  }, []);
-
-  // Sync with Supabase on load
   useEffect(() => {
     async function syncProgress() {
-      if (!user || !supabase) return;
+      if (!user) return;
 
       const { data, error } = await supabase
-        .from('progress')
+        .from('user_progress')
         .select('*')
         .eq('user_id', user.id);
 
       if (data && !error) {
-        const dbProgress = { ...getLocalProgress() };
+        const dbProgress = getInitialProgress();
         data.forEach(p => {
-          dbProgress[p.topik_id] = { status: 'done', xp_earned: 0, completed_at: p.completed_at };
+          dbProgress[p.topik_id] = { status: p.status, xp_earned: p.xp_earned, completed_at: p.completed_at };
         });
-        
-        // Unlock next topics based on what's done
-        const sorted = [...materiData].sort((a, b) => a.urutan - b.urutan);
-        sorted.forEach((t, i) => {
-          if (dbProgress[t.id]?.status === 'done' && sorted[i+1]) {
-            const nextId = sorted[i+1].id;
-            if (dbProgress[nextId].status === 'locked') dbProgress[nextId].status = 'active';
-          }
-        });
-
         setProgress(dbProgress);
       }
     }
     syncProgress();
   }, [user]);
 
-  const completeTopik = useCallback(async (topikId, xpEarned = 0) => {
-    // 1. Update Local
-    setProgress(prev => {
-      const updated = { ...prev };
-      updated[topikId] = { ...updated[topikId], status: 'done', completed_at: new Date().toISOString() };
-      const sorted = [...materiData].sort((a, b) => a.urutan - b.urutan);
-      const idx = sorted.findIndex(t => t.id === topikId);
-      if (sorted[idx + 1] && updated[sorted[idx + 1].id]?.status === 'locked') {
-        updated[sorted[idx + 1].id].status = 'active';
-      }
-      return updated;
-    });
+  const completeTopik = useCallback(async (topikId) => {
+    if (!user) return;
 
-    // 2. Update Supabase
-    if (user && supabase) {
-      await supabase.from('progress').upsert({
-        user_id: user.id,
-        topik_id: topikId,
-        completed_at: new Date().toISOString()
-      }, { onConflict: 'user_id, topik_id' });
+    // 1. Update Current Topik to 'done'
+    const sorted = [...materiData].sort((a, b) => a.urutan - b.urutan);
+    const idx = sorted.findIndex(t => t.id === topikId);
+    
+    await supabase.from('user_progress').upsert({
+      user_id: user.id,
+      topik_id: topikId,
+      status: 'done',
+      completed_at: new Date().toISOString()
+    }, { onConflict: 'user_id, topik_id' });
+
+    // 2. Update Next Topik to 'active' if it exists and is locked
+    if (sorted[idx + 1]) {
+      const nextId = sorted[idx + 1].id;
+      // We don't overwrite if it's already done
+      const { data } = await supabase.from('user_progress').select('status').eq('user_id', user.id).eq('topik_id', nextId).single();
+      if (!data || data.status === 'locked') {
+        await supabase.from('user_progress').upsert({
+          user_id: user.id,
+          topik_id: nextId,
+          status: 'active'
+        }, { onConflict: 'user_id, topik_id' });
+      }
     }
+
+    // Refresh state
+    const { data: newData } = await supabase.from('user_progress').select('*').eq('user_id', user.id);
+    if (newData) {
+      const newP = getInitialProgress();
+      newData.forEach(p => { newP[p.topik_id] = { status: p.status, xp_earned: p.xp_earned, completed_at: p.completed_at }; });
+      setProgress(newP);
+    }
+
   }, [user]);
 
   const getTopikStatus = useCallback((id) => progress[id]?.status ?? 'locked', [progress]);
-  const getTotalXP = useCallback(() => Object.values(progress).reduce((s, p) => s + (p.xp_earned || 0), 0), [progress]);
   const getCompletedCount = useCallback(() => Object.values(progress).filter(p => p.status === 'done').length, [progress]);
 
-  return { progress, getTopikStatus, completeTopik, getTotalXP, getCompletedCount };
+  return { progress, getTopikStatus, completeTopik, getCompletedCount };
 }

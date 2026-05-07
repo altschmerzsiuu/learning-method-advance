@@ -30,7 +30,7 @@ export default function SoalCard({
       >
         {/* Context / Soal Cerita if any */}
         {soal.context && (
-          <div className="bg-surface-muted border-l-4 border-primary-500 p-4 mb-4 rounded-r-md">
+          <div className="bg-surface-muted border-l-4 border-primary-300 p-4 mb-4 rounded-r-md">
             <p className="font-sans text-[13px] text-ink leading-[1.65] whitespace-pre-line italic">
               {soal.context}
             </p>

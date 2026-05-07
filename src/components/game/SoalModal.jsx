@@ -19,7 +19,7 @@ export default function SoalModal({ isOpen, soal, onAnswer }) {
           />
           <motion.div 
             variants={sheetVariants} initial="hidden" animate="visible" exit="exit"
-            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col shadow-none-none max-h-[90vh] overflow-y-auto"
           >
             <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6" />
             

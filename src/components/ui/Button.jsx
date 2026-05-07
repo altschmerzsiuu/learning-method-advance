@@ -26,9 +26,12 @@ export default function Button({
   };
 
   const variants = {
-    primary: 'bg-primary-500 hover:bg-primary-600 text-white',
-    ghost:   'bg-transparent hover:bg-surface-green text-primary-600 border border-border-green',
-    danger:  'bg-danger hover:bg-rose-600 text-white',
+    primary:   'bg-primary-300 hover:bg-primary-600 text-ink',
+    secondary: 'bg-secondary hover:bg-secondary-dark text-white',
+    accent:    'bg-accent hover:bg-accent-dark text-ink',
+    ghost:     'bg-transparent hover:bg-primary-50 text-primary-600 border-[1.5px] border-primary-200',
+    outline:   'bg-transparent hover:bg-primary-50 text-ink border-[1.5px] border-border',
+    danger:    'bg-danger hover:bg-rose-600 text-white',
   };
 
   return (

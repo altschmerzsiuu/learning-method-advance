@@ -24,7 +24,7 @@ export default function MysteryBoxModal({ isOpen, reward, onClose }) {
           />
           <motion.div 
             variants={sheetVariants} initial="hidden" animate="visible" exit="exit"
-            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col items-center shadow-2xl"
+            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col items-center shadow-none-none"
           >
             <h3 className="font-serif font-black text-2xl text-ink mb-6">Mystery Box!</h3>
             

@@ -1,76 +1,53 @@
-// src/hooks/useProfile.js
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import imageCompression from 'browser-image-compression';
 
-export function useProfile() {
+export function useProfile(userId) {
   const [profile, setProfile] = useState(null);
+  const [streak, setStreak] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+
+  const fetchData = useCallback(async () => {
+    if (!userId) return;
+    setLoading(true);
+    
+    const [profRes, streakRes] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('user_streak').select('*').eq('user_id', userId).single()
+    ]);
+
+    if (profRes.data) setProfile(profRes.data);
+    if (streakRes.data) setStreak(streakRes.data);
+    
+    setLoading(false);
+  }, [userId]);
 
   useEffect(() => {
-    // Get initial session
-    supabase?.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    fetchData();
+  }, [fetchData]);
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase?.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+  const updateProfile = async (updates) => {
+    const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
+    if (error) throw error;
+    setProfile(prev => ({ ...prev, ...updates }));
+  };
 
-    return () => subscription?.unsubscribe();
-  }, []);
+  const uploadAvatar = async (file) => {
+    if (file.size > 2 * 1024 * 1024) throw new Error('Foto maksimal 2MB');
+    if (!file.type.startsWith('image/')) throw new Error('Harus berupa gambar');
 
-  const fetchProfile = useCallback(async () => {
-    if (!user || !supabase) {
-      setLoading(false);
-      return;
-    }
+    const compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 400 });
+    const ext = file.name.split('.').pop();
+    const path = `${userId}/avatar-${Date.now()}.${ext}`;
 
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+    const { error } = await supabase.storage.from('avatars').upload(path, compressed, { upsert: true });
+    if (error) throw error;
 
-      if (error) throw error;
-      setProfile(data);
-    } catch (err) {
-      console.error('Error fetching profile:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
 
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    await updateProfile({ avatar_url: data.publicUrl, updated_at: new Date().toISOString() });
+    return data.publicUrl;
+  };
 
-  const addXP = useCallback(async (amount) => {
-    if (!user || !supabase || !profile) return;
-
-    const newXP = (profile.total_xp || 0) + amount;
-    // Simple level logic: every 500 XP = 1 level
-    const newLevel = Math.floor(newXP / 500) + 1;
-
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          total_xp: newXP, 
-          level: newLevel,
-          last_activity_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-      // Optimistic update
-      setProfile(prev => ({ ...prev, total_xp: newXP, level: newLevel }));
-    } catch (err) {
-      console.error('Error updating XP:', err.message);
-    }
-  }, [user, profile]);
-
-  return { profile, user, loading, addXP, refresh: fetchProfile };
+  return { profile, streak, loading, updateProfile, uploadAvatar, refresh: fetchData };
 }

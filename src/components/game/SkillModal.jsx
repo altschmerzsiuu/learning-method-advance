@@ -22,7 +22,7 @@ export default function SkillModal({ isOpen, skillId, onConfirm, onCancel }) {
           />
           <motion.div 
             variants={sheetVariants} initial="hidden" animate="visible" exit="exit"
-            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col items-center shadow-2xl"
+            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col items-center shadow-none-none"
           >
             <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center text-3xl mb-4 border border-primary-200">
               {skill.icon}

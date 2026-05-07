@@ -1,47 +1,57 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /* ============================================
-   TAILWIND v4 THEME — EksposiLab Design System
+   TAILWIND v4 THEME — explay. Cyber Pastel
    ============================================ */
 @theme {
   --font-serif: 'Fraunces', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  --color-primary-50:  #F0FDF4;
-  --color-primary-100: #DCFCE7;
-  --color-primary-200: #BBF7D0;
-  --color-primary-300: #86EFAC;
-  --color-primary-400: #4ADE80;
-  --color-primary-500: #22C55E;
-  --color-primary-600: #16A34A;
-  --color-primary-700: #15803D;
+  /* PRIMARY — Sky Blue */
+  --color-primary-50:  #F0FAFF;
+  --color-primary-100: #E0F5FF;
+  --color-primary-200: #B9ECFF;
+  --color-primary-300: #70D6FF;
+  --color-primary-400: #45C8FF;
+  --color-primary-500: #1ABAFF;
+  --color-primary-600: #00A3E8;
+  --color-primary-700: #0082BA;
 
-  --color-accent:        #FB923C;
-  --color-accent-light:  #FFF7ED;
-  --color-accent-border: #FED7AA;
+  /* SECONDARY — Pink */
+  --color-secondary:        #FF70A6;
+  --color-secondary-light:  #FFF0F6;
+  --color-secondary-border: #FFD6E8;
+  --color-secondary-dark:   #E8508A;
 
-  --color-info:        #38BDF8;
-  --color-info-light:  #F0F9FF;
-  --color-info-border: #BAE6FD;
+  /* ACCENT — Gold */
+  --color-accent:        #FFD670;
+  --color-accent-light:  #FFFBEB;
+  --color-accent-border: #FFE9A0;
+  --color-accent-dark:   #E8B800;
 
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-danger:  #F43F5E;
-
+  /* SURFACE */
   --color-surface:       #FAFAF8;
   --color-surface-card:  #FFFFFF;
-  --color-surface-muted: #F3F4F0;
-  --color-surface-green: #F0FDF4;
+  --color-surface-muted: #F5F5F5;
+  --color-surface-sky:   #F0FAFF;
 
-  --color-ink:         #0F1A0F;
-  --color-ink-muted:   #6B7280;
-  --color-ink-faint:   #D1D5DB;
+  /* INK */
+  --color-ink:         #0D1B2A;
+  --color-ink-muted:   #64748B;
+  --color-ink-faint:   #CBD5E1;
   --color-ink-inverse: #FFFFFF;
 
-  --color-border:        #E5E7EB;
-  --color-border-green:  #BBF7D0;
-  --color-border-strong: #D1D5DB;
+  /* BORDER */
+  --color-border:      #E8EDF2;
+  --color-border-sky:  #B9ECFF;
+  --color-border-pink: #FFD6E8;
+  --color-border-gold: #FFE9A0;
+
+  /* STATUS */
+  --color-success: #22C55E;
+  --color-warning: #FFD670;
+  --color-danger:  #F43F5E;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -109,46 +119,17 @@ a { text-decoration: none; color: inherit; }
   80%       { transform: translateX(4px); }
 }
 
-@keyframes xp-pop {
-  0%   { opacity: 0; transform: translateY(8px) scale(0.8); }
-  30%  { opacity: 1; transform: translateY(-12px) scale(1.1); }
-  70%  { opacity: 1; transform: translateY(-18px) scale(1); }
-  100% { opacity: 0; transform: translateY(-28px) scale(0.9); }
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-  50%       { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-}
-
-.animate-shake      { animation: shake 0.4s ease-in-out; }
-.animate-xp-pop     { animation: xp-pop 0.8s ease-out forwards; }
-.animate-spin       { animation: spin 1s linear infinite; }
-.animate-pulse-green{ animation: pulse-green 2s infinite; }
- 
-/* Batik Overlay Utility */
-.batik-overlay {
-  position: relative;
-  overflow: hidden;
-}
-.batik-overlay::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('/batik-pattern.png');
-  background-size: 250px;
-  background-repeat: repeat;
-  opacity: 0.15;
-  pointer-events: none;
-  z-index: 0;
-}
-.batik-overlay > * {
-  position: relative;
-  z-index: 1;
+.animate-shake { animation: shake 0.4s ease-in-out; }
+.animate-gradient {
+  background: linear-gradient(90deg, #70D6FF, #FF70A6, #FFD670);
+  background-size: 200% 100%;
+  animation: gradientShift 2s ease infinite;
 }
 
 /* ============================================
@@ -160,8 +141,9 @@ a { text-decoration: none; color: inherit; }
   border-radius: var(--radius-md);
   padding: 16px;
   transition: border-color 150ms ease;
+  box-shadow: none;
 }
-.card:hover { border-color: var(--color-primary-500); }
+.card:hover { border-color: var(--color-primary-300); }
 
 .badge {
   display: inline-flex;
@@ -171,21 +153,21 @@ a { text-decoration: none; color: inherit; }
   border-radius: 9999px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   border-width: 1px;
   border-style: solid;
 }
 .badge-done    { background: #DCFCE7; color: #16A34A; border-color: #BBF7D0; }
-.badge-active  { background: #FEF9C3; color: #CA8A04; border-color: #FDE68A; }
-.badge-locked  { background: #F3F4F6; color: #9CA3AF; border-color: #E5E7EB; }
-.badge-xp      { background: #FFF7ED; color: #EA580C; border-color: #FED7AA; }
-.badge-streak  { background: #FFF7ED; color: #EA580C; border-color: #FED7AA; }
+.badge-active  { background: #F0FAFF; color: #00A3E8; border-color: #B9ECFF; }
+.badge-locked  { background: #F5F5F5; color: #94A3B8; border-color: #E8EDF2; }
+.badge-xp      { background: #FFFBEB; color: #E8B800; border-color: #FFE9A0; }
+.badge-streak  { background: #FFF0F6; color: #E8508A; border-color: #FFD6E8; }
 
-.struktur-tesis      { background: #F0FDF4; border-color: #BBF7D0; }
-.struktur-argumentasi{ background: #FFF7ED; border-color: #FED7AA; }
-.struktur-penegasan  { background: #EFF6FF; border-color: #BFDBFE; }
+.struktur-tesis      { background: #F0FAFF; border-color: #B9ECFF; }
+.struktur-argumentasi{ background: #FFF0F6; border-color: #FFD6E8; }
+.struktur-penegasan  { background: #FFFBEB; border-color: #FFE9A0; }
 
-.label-tesis      { color: #16A34A; }
-.label-argumentasi{ color: #EA580C; }
-.label-penegasan  { color: #2563EB; }
+.label-tesis      { color: #00A3E8; }
+.label-argumentasi{ color: #E8508A; }
+.label-penegasan  { color: #E8B800; }

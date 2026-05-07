@@ -11,11 +11,11 @@ export default function ProgressBar({ value = 0, max = 100, className = '' }) {
     <div className={`flex items-center gap-2 w-full ${className}`}>
       <div className="flex-1 h-1 bg-border rounded-full overflow-hidden">
         <div
-          className="h-full bg-primary-500 rounded-full transition-all duration-500 ease-out"
+          className="h-full animate-gradient rounded-full transition-all duration-500 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-[12px] font-sans font-black shrink-0">{pct}%</span>
+      <span className="text-[12px] font-sans font-bold text-ink-muted shrink-0">{pct}%</span>
     </div>
   );
 }

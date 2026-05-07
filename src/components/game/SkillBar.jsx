@@ -14,7 +14,7 @@ export default function SkillBar({ skills, currentTurn, onSkillClick }) {
             <button
               key={`${skillId}-${i}`}
               onClick={() => onSkillClick(skillId)}
-              className="px-3 py-1.5 bg-surface-card border border-border rounded-full shadow-sm flex items-center gap-1.5 hover:-translate-y-0.5 transition-transform"
+              className="px-3 py-1.5 bg-surface-card border border-border rounded-full shadow-none-none flex items-center gap-1.5 hover:-translate-y-0.5 transition-transform"
             >
               <span className="text-sm">{skill.icon}</span>
               <span className="text-xs font-bold text-ink">{skill.label}</span>

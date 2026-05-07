@@ -5,26 +5,50 @@ import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { Zap, RotateCcw, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
 import { PageWrapper, Button } from '../components/ui';
-import { useStreak } from '../hooks/useStreak';
+import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
+import { checkAndAwardBadges, triggerBadgeToast } from '../lib/badgeChecker';
 
 export default function HasilQuizScreen() {
   const { topikId } = useParams();
   const navigate    = useNavigate();
   const location    = useLocation();
-  const { addXP }   = useStreak();
+  const { user } = useAuth();
 
   const { score = 0, total = 5, scorePercent = 0 } = location.state ?? {};
   const xpEarned = Math.round(scorePercent * 0.8); // max 80 XP for perfect
 
-  // Fire confetti on great score
+  // Fire confetti on great score and award XP
   useEffect(() => {
-    addXP(xpEarned);
+    if (!user) return;
+
+    const processResults = async () => {
+      // 1. Update Profile XP
+      const { data: profile } = await supabase.from('profiles').select('total_xp').eq('id', user.id).single();
+      if (profile) {
+        await supabase.from('profiles').update({ total_xp: profile.total_xp + xpEarned }).eq('id', user.id);
+      }
+      
+      // 2. Check and Award Badges
+      const newBadges = await checkAndAwardBadges(user.id, { type: 'quiz_done', value: 1 });
+      if (scorePercent === 100) {
+        const perfBadges = await checkAndAwardBadges(user.id, { type: 'score', value: 100 });
+        newBadges.push(...perfBadges);
+      }
+      
+      // Also check topics_done if we want
+      
+      newBadges.forEach(b => triggerBadgeToast(b));
+    };
+
+    processResults();
+
     if (scorePercent >= 80) {
       confetti({
         particleCount: 120,
         spread: 80,
         origin: { y: 0.4 },
-        colors: ['#22C55E', '#FB923C', '#38BDF8', '#FBBF24'],
+        colors: ['#70D6FF', '#FF70A6', '#FFD670', '#FFFFFF'],
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,7 +70,7 @@ export default function HasilQuizScreen() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
           className={`w-32 h-32 rounded-full flex flex-col items-center justify-center border-4 mb-6 ${
-            scorePercent >= 80 ? 'border-primary-500 bg-primary-50' :
+            scorePercent >= 80 ? 'border-primary-300 bg-primary-50' :
             scorePercent >= 60 ? 'border-accent bg-accent-light' :
             'border-danger bg-red-50'
           }`}
@@ -75,7 +99,7 @@ export default function HasilQuizScreen() {
           className="w-full flex gap-3 mb-6"
         >
           <div className="flex-1 bg-primary-50 border border-primary-200 rounded-md p-3 text-center">
-            <CheckCircle2 size={20} strokeWidth={1.5} className="mx-auto text-primary-500 mb-1" />
+            <CheckCircle2 size={20} strokeWidth={1.5} className="mx-auto text-primary-300 mb-1" />
             <p className="font-serif text-[22px] font-black text-ink">{score}</p>
             <p className="font-sans text-[11px] text-ink-muted">Benar</p>
           </div>

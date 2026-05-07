@@ -5,20 +5,20 @@ import { CheckCircle2, XCircle } from 'lucide-react';
 export default function PilihanButton({ pilihan, isSelected, isAnswered, isCorrect, onClick }) {
   const letter = pilihan.charAt(0); // 'A', 'B', 'C', 'D'
 
-  let stateClass = 'border-border bg-surface-card hover:border-primary-500';
+  let stateClass = 'border-border bg-surface-card hover:border-primary-300';
   let letterClass = 'bg-surface-muted text-ink-muted';
 
   if (isAnswered) {
     if (isCorrect) {
-      stateClass  = 'border-primary-500 bg-primary-50';
-      letterClass = 'bg-primary-500 text-white';
+      stateClass  = 'border-primary-300 bg-primary-50';
+      letterClass = 'bg-primary-300 text-white';
     } else if (isSelected && !isCorrect) {
       stateClass  = 'border-danger bg-red-50';
       letterClass = 'bg-danger text-white';
     }
   } else if (isSelected) {
-    stateClass  = 'border-primary-500 bg-primary-50';
-    letterClass = 'bg-primary-500 text-white';
+    stateClass  = 'border-primary-300 bg-primary-50';
+    letterClass = 'bg-primary-300 text-white';
   }
 
   return (
@@ -37,7 +37,7 @@ export default function PilihanButton({ pilihan, isSelected, isAnswered, isCorre
         {pilihan.slice(3)} {/* strip "A. " */}
       </span>
       {isAnswered && isCorrect && (
-        <CheckCircle2 size={18} strokeWidth={2} className="text-primary-500 shrink-0" />
+        <CheckCircle2 size={18} strokeWidth={2} className="text-primary-300 shrink-0" />
       )}
       {isAnswered && isSelected && !isCorrect && (
         <XCircle size={18} strokeWidth={2} className="text-danger shrink-0" />

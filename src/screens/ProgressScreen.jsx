@@ -65,7 +65,7 @@ export default function ProgressScreen() {
                   <div key={topik.id} className="flex items-start gap-4">
                     {/* Node */}
                     <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center shrink-0 border-2 ${
-                      isDone   ? 'border-primary-500 bg-primary-500' :
+                      isDone   ? 'border-primary-300 bg-primary-300' :
                       !isLocked ? 'border-accent bg-white' :
                       'border-border bg-surface-muted'
                     }`}>
@@ -80,7 +80,7 @@ export default function ProgressScreen() {
                       className={`flex-1 flex items-center gap-3 p-3.5 rounded-md border transition-all ${
                         isLocked   ? 'border-border bg-surface-muted opacity-60 cursor-not-allowed' :
                         isDone     ? 'border-primary-200 bg-primary-50 cursor-pointer' :
-                        'border-border bg-surface-card hover:border-primary-500 cursor-pointer'
+                        'border-border bg-surface-card hover:border-primary-300 cursor-pointer'
                       }`}
                     >
                       <div className="flex-1">

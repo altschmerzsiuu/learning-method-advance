@@ -1,84 +1,53 @@
-// src/hooks/useStreak.js
 import { useState, useEffect, useCallback } from 'react';
-
-const STREAK_KEY  = 'eksposilab_streak';
-const XP_KEY      = 'eksposilab_total_xp';
-
-function loadStreak() {
-  try {
-    return JSON.parse(localStorage.getItem(STREAK_KEY)) ?? { count: 0, lastActive: null };
-  } catch { return { count: 0, lastActive: null }; }
-}
-
-function loadTotalXP() {
-  return parseInt(localStorage.getItem(XP_KEY) ?? '0', 10);
-}
-
-function getLevel(xp) {
-  if (xp <= 100)  return { level: 1, label: 'Pemula',      nextXP: 100  };
-  if (xp <= 250)  return { level: 2, label: 'Pelajar',     nextXP: 250  };
-  if (xp <= 500)  return { level: 3, label: 'Pengamat',    nextXP: 500  };
-  if (xp <= 800)  return { level: 4, label: 'Analis',      nextXP: 800  };
-  return          { level: 5, label: 'Ekspositor',  nextXP: Infinity };
-}
-
-function isToday(dateStr) {
-  if (!dateStr) return false;
-  return new Date(dateStr).toDateString() === new Date().toDateString();
-}
-
-function isYesterday(dateStr) {
-  if (!dateStr) return false;
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return new Date(dateStr).toDateString() === yesterday.toDateString();
-}
+import { supabase } from '../lib/supabase';
+import { useAuth } from './useAuth';
 
 export function useStreak() {
-  const [streak, setStreak]   = useState(loadStreak);
-  const [totalXP, setTotalXP] = useState(loadTotalXP);
+  const { user } = useAuth();
+  const [streak, setStreak] = useState(0);
+  const [totalXP, setTotalXP] = useState(0);
+  const [weekDots, setWeekDots] = useState(Array(7).fill({ isActive: false }));
 
-  // Check and update streak on mount
+  const fetchStreak = useCallback(async () => {
+    if (!user) return;
+    
+    // We get last 7 days of activity from quiz_results and game_history
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+
+    const { data: profile } = await supabase.from('profiles').select('total_xp').eq('id', user.id).single();
+    const { data: streakData } = await supabase.from('user_streak').select('*').eq('user_id', user.id).single();
+
+    if (streakData) {
+      setStreak(streakData.streak_count || 0);
+    }
+    if (profile) {
+      setTotalXP(profile.total_xp || 0);
+    }
+
+    // Determine week dots (very simple mock based on streak count for now)
+    // A real implementation would query daily activity, but here we just fill based on streak
+    const dots = Array(7).fill({ isActive: false });
+    const count = Math.min(7, streakData?.streak_count || 0);
+    for (let i = 0; i < count; i++) {
+      dots[6 - i] = { isActive: true }; // fill from today backwards
+    }
+    setWeekDots(dots);
+
+  }, [user]);
+
   useEffect(() => {
-    setStreak(prev => {
-      if (isToday(prev.lastActive)) return prev; // already counted today
+    fetchStreak();
+  }, [fetchStreak]);
 
-      const updated = {
-        count:      isYesterday(prev.lastActive) ? prev.count + 1 : 1,
-        lastActive: new Date().toISOString(),
-      };
-      localStorage.setItem(STREAK_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+  const level = Math.floor(totalXP / 500) + 1;
+  let levelLabel = 'Pemula';
+  if (level === 2) levelLabel = 'Pembelajar';
+  if (level === 3) levelLabel = 'Bintang';
+  if (level === 4) levelLabel = 'On Fire';
+  if (level >= 5) levelLabel = 'Master';
 
-  const addXP = useCallback((amount) => {
-    setTotalXP(prev => {
-      const next = prev + amount;
-      localStorage.setItem(XP_KEY, String(next));
-      return next;
-    });
-  }, []);
-
-  const { level, label: levelLabel, nextXP } = getLevel(totalXP);
-
-  // Build last 7 days active state
-  const weekDots = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    // simplified: today and yesterday are active if streak >= 2
-    const isActive = i === 6 || (i === 5 && streak.count >= 2);
-    return { date: d, isActive };
-  });
-
-  return {
-    streak:     streak.count,
-    lastActive: streak.lastActive,
-    totalXP,
-    addXP,
-    level,
-    levelLabel,
-    nextXP,
-    weekDots,
-  };
+  return { streak, totalXP, level, levelLabel, weekDots, refresh: fetchStreak };
 }

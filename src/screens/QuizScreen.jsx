@@ -18,7 +18,7 @@ export default function QuizScreen() {
     return (
       <PageWrapper>
         <div className="flex flex-col items-center justify-center min-h-dvh p-4 gap-4">
-          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
           <p className="font-sans text-[14px] text-ink-muted">Memuat soal...</p>
         </div>
       </PageWrapper>
@@ -49,7 +49,7 @@ export default function QuizScreen() {
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i < currentIdx ? 'bg-primary-500 w-3' :
+                i < currentIdx ? 'bg-primary-300 w-3' :
                 i === currentIdx ? 'bg-primary-400 w-5' :
                 'bg-border w-3'
               }`}

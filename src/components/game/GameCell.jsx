@@ -13,7 +13,7 @@ export default function GameCell({ idx, value, isWinner, onClick, isMysteryBox, 
   if (value === 'X') {
     bgClass = 'bg-primary-50';
     borderClass = 'border-primary-200';
-    content = <motion.span variants={symbolVariants} initial="hidden" animate="visible" className="text-primary-500 font-serif font-black text-4xl">X</motion.span>;
+    content = <motion.span variants={symbolVariants} initial="hidden" animate="visible" className="text-primary-300 font-serif font-black text-4xl">X</motion.span>;
   } else if (value === 'O') {
     bgClass = 'bg-rose-50';
     borderClass = 'border-rose-200';
@@ -25,7 +25,7 @@ export default function GameCell({ idx, value, isWinner, onClick, isMysteryBox, 
   }
 
   if (isWinner) {
-    borderClass = 'border-primary-500 animate-pulse';
+    borderClass = 'border-primary-300 animate-pulse';
   }
 
   let targetProps = {};

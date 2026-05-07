@@ -93,7 +93,7 @@ export default function GameScreen() {
             ) : mode === 'team' && currentTurn === 'O' ? (
               <p className="text-sm font-bold text-rose-500 animate-pulse">Tim O, giliranmu! Serahkan HP ke temanmu 🤝</p>
             ) : mode === 'team' && currentTurn === 'X' ? (
-              <p className="text-sm font-bold text-primary-500 animate-pulse">Tim X, giliranmu! Serahkan HP ke temanmu 🤝</p>
+              <p className="text-sm font-bold text-primary-300 animate-pulse">Tim X, giliranmu! Serahkan HP ke temanmu 🤝</p>
             ) : (
               <p className="text-sm text-ink-muted">Klik kotak untuk menjawab soal</p>
             )}
@@ -122,7 +122,7 @@ export default function GameScreen() {
         {skillTargetMode && (
           <button 
             onClick={() => { setSkillTargetMode(false); setActiveSkill(null); }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-surface-card px-4 py-2 rounded-full shadow-lg border border-border text-xs font-bold text-ink-muted z-20"
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-surface-card px-4 py-2 rounded-full shadow-none-none border border-border text-xs font-bold text-ink-muted z-20"
           >
             Batal Pakai Skill
           </button>

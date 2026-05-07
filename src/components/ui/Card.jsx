@@ -15,7 +15,7 @@ export default function Card({
 }) {
   const hasBg = className.includes('bg-');
   const base = `${hasBg ? '' : 'bg-surface-card'} border border-border rounded-md ${padding} transition-colors duration-150`;
-  const hover = hoverable ? 'cursor-pointer hover:border-primary-500' : '';
+  const hover = hoverable ? 'cursor-pointer hover:border-primary-300' : '';
 
   if (onClick || hoverable) {
     return (
