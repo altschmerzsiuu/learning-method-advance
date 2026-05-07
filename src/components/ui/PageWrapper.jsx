@@ -19,16 +19,21 @@ const pageVariants = {
  * PageWrapper — Wraps every screen with page transition animation.
  * Usage: wrap the return JSX of each screen with <PageWrapper>
  */
-export default function PageWrapper({ children, className = '' }) {
+import BottomNav from './BottomNav';
+
+export default function PageWrapper({ children, className = '', bottomNav = false }) {
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      className={`min-h-dvh ${className}`}
+      className={`min-h-dvh flex flex-col ${className}`}
     >
-      {children}
+      <main className="flex-1">
+        {children}
+      </main>
+      {bottomNav && <BottomNav />}
     </motion.div>
   );
 }

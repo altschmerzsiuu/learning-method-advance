@@ -1,10 +1,12 @@
-// src/screens/HomeScreen.jsx
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, ChevronRight, CheckCircle2, Lock, PlayCircle, Flame, Zap } from 'lucide-react';
-import { PageWrapper, TopBar, BottomNav, Card, Badge, ProgressBar } from '../components/ui';
+import { BookOpen, ChevronRight, CheckCircle2, Lock, PlayCircle, Flame, Zap, LogOut } from 'lucide-react';
+import { PageWrapper, TopBar, BottomNav, Card, Badge, ProgressBar, ConfirmModal } from '../components/ui';
 import { useProgress } from '../hooks/useProgress';
 import { useStreak }   from '../hooks/useStreak';
+import { useAuth }     from '../hooks/useAuth';
+import { useProfile }  from '../hooks/useProfile';
 import materiData      from '../data/materi.json';
 
 const STATUS_ICON = {
@@ -15,16 +17,37 @@ const STATUS_ICON = {
 
 export default function HomeScreen() {
   const navigate             = useNavigate();
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile(user?.id);
   const { progress, getTopikStatus, getCompletedCount } = useProgress();
   const { streak, totalXP, level, levelLabel, weekDots } = useStreak();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login', { replace: true });
+  };
 
   const sortedMateri = [...materiData].sort((a, b) => a.urutan - b.urutan);
   const completedCount = getCompletedCount();
   const totalCount     = sortedMateri.length;
 
   return (
-    <PageWrapper>
-      <TopBar logo xp={totalXP} />
+    <PageWrapper bottomNav>
+      <TopBar 
+        logo 
+        xp={totalXP} 
+        userName={profile?.nama}
+        onLogout={() => setShowLogoutConfirm(true)}
+      />
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Yakin ingin keluar?"
+        message="Sesi kamu akan berakhir, tapi semua progres belajar kamu tetap aman kok!"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
 
       <div className="px-4 pb-28 pt-5 flex flex-col gap-5">
 
@@ -157,8 +180,6 @@ export default function HomeScreen() {
         </section>
 
       </div>
-
-      <BottomNav />
     </PageWrapper>
   );
 }

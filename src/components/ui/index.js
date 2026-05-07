@@ -6,3 +6,4 @@ export { default as ProgressBar } from './ProgressBar';
 export { default as TopBar }      from './TopBar';
 export { default as BottomNav }   from './BottomNav';
 export { default as PageWrapper } from './PageWrapper';
+export { default as ConfirmModal } from './ConfirmModal';

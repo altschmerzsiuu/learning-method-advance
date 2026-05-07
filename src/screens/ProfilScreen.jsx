@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageWrapper, TopBar, BottomNav, Button } from '../components/ui';
+import { PageWrapper, TopBar, ConfirmModal } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useProgress } from '../hooks/useProgress';
 import { supabase } from '../lib/supabase';
-import { Edit2, LogOut, Camera } from 'lucide-react';
+import { Edit2 } from 'lucide-react';
 
 export default function ProfilScreen() {
   const navigate = useNavigate();
@@ -15,11 +15,12 @@ export default function ProfilScreen() {
   
   const [badges, setBadges] = useState([]);
   const [userBadgeIds, setUserBadgeIds] = useState([]);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     async function loadBadges() {
       if (!user) return;
-      const { data: allBadges } = await supabase.from('badges').select('*');
+      const { data: allBadges } = await supabase.from('badges').select('*').order('id');
       const { data: uBadges } = await supabase.from('user_badges').select('badge_id').eq('user_id', user.id);
       
       setBadges(allBadges || []);
@@ -41,9 +42,23 @@ export default function ProfilScreen() {
 
   return (
     <PageWrapper bottomNav>
-      <TopBar title="Profil" />
+      <TopBar 
+        title="Profil" 
+        xp={totalXP} 
+        userName={profile?.nama}
+        onLogout={() => setShowLogoutConfirm(true)}
+      />
 
-      <div className="container py-6 flex flex-col gap-6 px-4">
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Yakin ingin keluar?"
+        message="Sesi kamu akan berakhir, tapi semua progres belajar kamu tetap aman kok!"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
+
+      {/* pb-32 biar konten paling bawah nggak ketutup menu bawah */}
+      <div className="container py-6 pb-32 flex flex-col gap-6 px-4">
         
         {/* Avatar Section */}
         <div className="flex flex-col items-center">
@@ -55,17 +70,21 @@ export default function ProfilScreen() {
                 <span className="text-3xl">👤</span>
               )}
             </div>
-            <button
-              onClick={() => navigate('/profil/edit')}
-              className="absolute bottom-0 right-0 bg-surface-card border border-border rounded-full p-1.5 shadow-none"
-            >
-              <Camera size={12} className="text-ink" />
-            </button>
           </div>
           <h2 className="font-serif font-bold text-xl text-ink leading-none">{profile?.nama || 'Pelajar'}</h2>
           <p className="font-sans text-sm text-ink-muted mt-1">Kelas {profile?.kelas || 'VII'} • {profile?.sekolah || 'Belum diatur'}</p>
-          <div className="bg-primary-50 border border-primary-200 text-primary-600 px-3 py-1 rounded-full text-xs font-bold mt-2 uppercase tracking-wide">
-            Level {level}
+          
+          <div className="flex items-center gap-2 mt-2">
+            <div className="bg-primary-50 border border-primary-200 text-primary-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+              Level {level}
+            </div>
+            <button 
+              onClick={() => navigate('/profil/edit')}
+              className="p-1.5 bg-surface-muted border border-border rounded-full hover:bg-white transition-colors"
+              title="Edit Profil"
+            >
+              <Edit2 size={12} className="text-ink-muted" />
+            </button>
           </div>
         </div>
 
@@ -104,15 +123,6 @@ export default function ProfilScreen() {
               );
             })}
           </div>
-        </div>
-
-        <div className="flex flex-col gap-3 mt-4">
-          <Button variant="ghost" fullWidth onClick={() => navigate('/profil/edit')} className="flex gap-2">
-            <Edit2 size={16} /> Edit Profil
-          </Button>
-          <Button variant="danger" fullWidth onClick={handleLogout} className="flex gap-2 bg-rose-50 text-rose-600 border-none hover:bg-rose-100">
-            <LogOut size={16} /> Keluar
-          </Button>
         </div>
 
       </div>

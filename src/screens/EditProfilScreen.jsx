@@ -1,125 +1,143 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageWrapper, TopBar, Button, Card } from '../components/ui';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
-import { Camera } from 'lucide-react';
+import { PageWrapper, TopBar, Card, Button } from '../components/ui';
+import { Camera, Mail, Lock, Calendar } from 'lucide-react';
 
 export default function EditProfilScreen() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile, loading: profileLoading, updateProfile, uploadAvatar } = useProfile(user?.id);
 
-  const [formData, setFormData] = useState({ nama: '', kelas: 'VII', sekolah: '' });
-  const [avatarPreview, setAvatarPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [nama, setNama] = useState('');
+  const [kelas, setKelas] = useState('');
+  const [sekolah, setSekolah] = useState('');
+  const [tanggalLahir, setTanggalLahir] = useState('');
+  
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (profile) {
-      setFormData({
-        nama: profile.nama || '',
-        kelas: profile.kelas || 'VII',
-        sekolah: profile.sekolah || ''
-      });
-      setAvatarPreview(profile.avatar_url);
+      setNama(profile.nama || '');
+      setKelas(profile.kelas || '');
+      setSekolah(profile.sekolah || '');
+      setTanggalLahir(profile.tanggal_lahir || '');
     }
   }, [profile]);
-
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
-      setError('');
-      // Show preview immediately
-      setAvatarPreview(URL.createObjectURL(file));
-      const url = await uploadAvatar(file);
-      setAvatarPreview(url);
-    } catch (err) {
-      setError(err.message || 'Gagal upload foto.');
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setError('');
-    try {
-      await updateProfile(formData);
-      navigate('/profil', { replace: true });
-    } catch (err) {
-      setError('Gagal menyimpan profil.');
-    } finally {
-      setSaving(false);
+    const { success } = await updateProfile({ 
+      nama, 
+      kelas, 
+      sekolah, 
+      tanggal_lahir: tanggalLahir 
+    });
+    if (success) {
+      alert('Profil berhasil diperbarui!');
+      navigate('/profil');
     }
+    setSaving(false);
+  };
+
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const { success } = await uploadAvatar(file);
+    if (success) alert('Foto berhasil diperbarui!');
+    setUploading(false);
   };
 
   if (profileLoading) return <div className="p-6 text-center">Memuat...</div>;
 
   return (
-    <PageWrapper>
-      <TopBar title="Edit Profil" showBack />
+    <PageWrapper bottomNav>
+      <TopBar title="Edit Profil" showBack={true} />
       
-      <div className="container py-6 flex flex-col items-center">
-        {/* Avatar Editor */}
-        <div className="relative mb-8 group">
-          <div className="w-[100px] h-[100px] rounded-full border-4 border-transparent bg-gradient-to-tr from-primary-300 to-secondary p-1">
-            <div className="w-full h-full rounded-full bg-white overflow-hidden relative">
-              {avatarPreview ? (
-                <img src={avatarPreview} alt="Avatar" className={`w-full h-full object-cover ${uploading ? 'opacity-50' : ''}`} />
+      <div className="container py-6 pb-32 flex flex-col items-center px-4">
+        {/* Avatar Upload */}
+        <div className="relative mb-8">
+          <div className="w-[100px] h-[100px] rounded-full border-[3px] border-transparent bg-gradient-to-tr from-primary-300 to-secondary p-0.5 shadow-xl">
+            <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-surface-muted flex items-center justify-center text-ink-faint text-3xl">👤</div>
+                <span className="text-4xl">👤</span>
               )}
             </div>
           </div>
-          
-          <label className="absolute bottom-0 right-0 w-8 h-8 bg-surface-card rounded-full border border-border flex items-center justify-center cursor-pointer shadow-none hover:border-primary-300 transition-colors">
-            <Camera size={16} className="text-ink-muted" />
-            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} disabled={uploading} />
+          <label className="absolute bottom-0 right-0 bg-white border border-border rounded-full p-2 shadow-lg cursor-pointer hover:bg-surface-muted transition-colors">
+            <input type="file" className="hidden" accept="image/*" onChange={handlePhotoChange} disabled={uploading} />
+            <Camera size={16} className="text-primary-300" />
           </label>
         </div>
 
-        {error && <div className="text-rose-500 text-sm mb-4 bg-rose-50 p-2 rounded-lg">{error}</div>}
-
-        <Card className="w-full">
-          <form onSubmit={handleSave} className="flex flex-col gap-4">
+        {/* Form Bio */}
+        <Card className="w-full max-w-md p-6 mb-6">
+          <h3 className="font-serif font-black text-lg mb-6 flex items-center gap-2">
+            <div className="w-1.5 h-6 bg-primary-300 rounded-full" />
+            Informasi Dasar
+          </h3>
+          
+          <form onSubmit={handleSave} className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-bold text-ink">Nama Lengkap</label>
-              <input type="text" name="nama" required value={formData.nama} onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-border focus:border-primary-300 focus:outline-none transition-colors" />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-bold text-ink">Kelas</label>
-              <select name="kelas" value={formData.kelas} onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-border focus:border-primary-300 focus:outline-none transition-colors bg-white">
-                <option value="VII">VII</option>
-                <option value="VIII">VIII</option>
-                <option value="IX">IX</option>
-              </select>
+              <label className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Email Akun</label>
+              <div className="flex items-center gap-3 p-3.5 bg-surface-muted rounded-xl border border-border text-ink-faint">
+                <Mail size={16} />
+                <span className="text-sm font-medium">{user?.email}</span>
+              </div>
+              <p className="text-[10px] text-ink-faint italic mt-1">* Email tidak dapat diubah</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-bold text-ink">Nama Sekolah</label>
-              <input type="text" name="sekolah" value={formData.sekolah} onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-border focus:border-primary-300 focus:outline-none transition-colors" />
+              <label className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Nama Lengkap</label>
+              <input 
+                type="text" value={nama} onChange={(e) => setNama(e.target.value)}
+                className="p-3.5 bg-white border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                placeholder="Nama kamu..." required
+              />
             </div>
 
-            <div className="flex flex-col gap-3 mt-4">
-              <Button type="submit" disabled={saving || uploading} fullWidth>
-                {saving ? 'Menyimpan...' : 'Simpan Profil'}
-              </Button>
-              <Button type="button" variant="ghost" onClick={() => navigate('/profil')} fullWidth>
-                Batal
-              </Button>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Kelas</label>
+                <select 
+                  value={kelas} onChange={(e) => setKelas(e.target.value)}
+                  className="p-3.5 bg-white border border-border rounded-xl text-sm outline-none"
+                >
+                  <option value="VII">VII</option>
+                  <option value="VIII">VIII</option>
+                  <option value="IX">IX</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Tanggal Lahir</label>
+                <div className="relative">
+                  <input 
+                    type="date" value={tanggalLahir} onChange={(e) => setTanggalLahir(e.target.value)}
+                    className="w-full p-3.5 bg-white border border-border rounded-xl text-sm outline-none"
+                  />
+                </div>
+              </div>
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">Nama Sekolah</label>
+              <input 
+                type="text" value={sekolah} onChange={(e) => setSekolah(e.target.value)}
+                className="p-3.5 bg-white border border-border rounded-xl text-sm outline-none"
+                placeholder="Nama sekolah kamu..."
+              />
+            </div>
+
+            <Button type="submit" disabled={saving || uploading} fullWidth className="mt-2">
+              {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+            </Button>
           </form>
         </Card>
 

@@ -1,9 +1,9 @@
 // src/components/ui/BottomNav.jsx
 import { NavLink } from 'react-router-dom';
-import { BookOpen, Target, BarChart2, User } from 'lucide-react';
+import { Home, Target, BarChart2, User } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/belajar',  icon: BookOpen,  label: 'Belajar'  },
+  { to: '/home',     icon: Home,      label: 'Beranda' },
   { to: '/latihan',  icon: Target,    label: 'Latihan'  },
   { to: '/progress', icon: BarChart2, label: 'Progress' },
   { to: '/profil',   icon: User,      label: 'Profil'   },

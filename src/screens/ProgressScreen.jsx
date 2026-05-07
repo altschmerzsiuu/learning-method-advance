@@ -1,22 +1,46 @@
 // src/screens/ProgressScreen.jsx
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Lock, PlayCircle, ChevronRight, Zap } from 'lucide-react';
-import { PageWrapper, TopBar, BottomNav, ProgressBar } from '../components/ui';
+import { PageWrapper, TopBar, ProgressBar, ConfirmModal } from '../components/ui';
 import { useProgress } from '../hooks/useProgress';
 import { useStreak }   from '../hooks/useStreak';
+import { useAuth }     from '../hooks/useAuth';
+import { useProfile }  from '../hooks/useProfile';
 import materiData      from '../data/materi.json';
 
 export default function ProgressScreen() {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile(user?.id);
   const { progress, getTopikStatus, getCompletedCount } = useProgress();
   const { totalXP, level, levelLabel, nextXP } = useStreak();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login', { replace: true });
+  };
 
   const sorted         = [...materiData].sort((a, b) => a.urutan - b.urutan);
   const completedCount = getCompletedCount();
 
   return (
-    <PageWrapper>
-      <TopBar title="Progress" />
+    <PageWrapper bottomNav>
+      <TopBar 
+        title="Progress" 
+        xp={totalXP} 
+        userName={profile?.nama}
+        onLogout={() => setShowLogoutConfirm(true)}
+      />
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Yakin ingin keluar?"
+        message="Sesi kamu akan berakhir, tapi semua progres belajar kamu tetap aman kok!"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
 
       <div className="px-4 pb-28 pt-5 flex flex-col gap-5">
 
@@ -106,8 +130,6 @@ export default function ProgressScreen() {
         </section>
 
       </div>
-
-      <BottomNav />
     </PageWrapper>
   );
 }
