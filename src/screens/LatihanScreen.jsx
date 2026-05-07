@@ -63,7 +63,7 @@ export default function LatihanScreen() {
           </h2>
           <Card
             hoverable
-            onClick={() => navigate('/latihan/duel')}
+            onClick={() => navigate('/latihan/think-tac-toe')}
             className="flex items-center gap-4 py-5"
           >
             <div className="w-12 h-12 rounded-lg bg-accent-light border border-accent-border flex items-center justify-center shrink-0">

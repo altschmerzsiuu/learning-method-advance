@@ -8,9 +8,9 @@ import MateriScreen    from './screens/MateriScreen';
 import QuizScreen      from './screens/QuizScreen';
 import HasilQuizScreen from './screens/HasilQuizScreen';
 import LatihanScreen   from './screens/LatihanScreen';
-import DuelSetupScreen from './screens/DuelSetupScreen';
-import DuelGameScreen  from './screens/DuelGameScreen';
-import DuelHasilScreen from './screens/DuelHasilScreen';
+import GameSetupScreen from './screens/GameSetupScreen';
+import GameScreen      from './screens/GameScreen';
+import GameHasilScreen from './screens/GameHasilScreen';
 import ProgressScreen  from './screens/ProgressScreen';
 import ProfilScreen    from './screens/ProfilScreen';
 
@@ -26,9 +26,9 @@ function AppRoutes() {
         <Route path="/quiz/:topikId"       element={<QuizScreen />} />
         <Route path="/quiz/:topikId/hasil" element={<HasilQuizScreen />} />
         <Route path="/latihan"             element={<LatihanScreen />} />
-        <Route path="/latihan/duel"        element={<DuelSetupScreen />} />
-        <Route path="/latihan/duel/main"   element={<DuelGameScreen />} />
-        <Route path="/latihan/duel/hasil"  element={<DuelHasilScreen />} />
+        <Route path="/latihan/think-tac-toe"        element={<GameSetupScreen />} />
+        <Route path="/latihan/think-tac-toe/main"   element={<GameScreen />} />
+        <Route path="/latihan/think-tac-toe/hasil"  element={<GameHasilScreen />} />
         <Route path="/progress"            element={<ProgressScreen />} />
         <Route path="/profil"              element={<ProfilScreen />} />
       </Routes>

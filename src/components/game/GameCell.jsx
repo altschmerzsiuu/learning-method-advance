@@ -1,58 +1,50 @@
-// src/components/game/GameCell.jsx
 import { motion } from 'framer-motion';
-import { X, Circle } from 'lucide-react';
 
-export default function GameCell({ index, value, isWinning, onClick }) {
-  const isEmpty = value === '';
+const symbolVariants = {
+  hidden:  { scale: 0, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 15 } }
+};
 
-  let cellClass = 'aspect-square flex items-center justify-center rounded-md border-2 cursor-pointer transition-all';
+export default function GameCell({ idx, value, isWinner, onClick, isMysteryBox, isTargetMode, activeSkill }) {
+  let bgClass = 'bg-surface-muted';
+  let borderClass = 'border-border';
+  let content = null;
 
-  if (isWinning) {
-    cellClass += ' border-primary-500 bg-primary-50';
-  } else if (value === 'X') {
-    cellClass += ' border-primary-300 bg-primary-50 cursor-default';
+  if (value === 'X') {
+    bgClass = 'bg-primary-50';
+    borderClass = 'border-primary-200';
+    content = <motion.span variants={symbolVariants} initial="hidden" animate="visible" className="text-primary-500 font-serif font-black text-4xl">X</motion.span>;
   } else if (value === 'O') {
-    cellClass += ' border-accent-border bg-accent-light cursor-default';
-  } else {
-    cellClass += ' border-border bg-surface-card hover:border-primary-400 hover:bg-surface-green';
+    bgClass = 'bg-rose-50';
+    borderClass = 'border-rose-200';
+    content = <motion.span variants={symbolVariants} initial="hidden" animate="visible" className="text-rose-500 font-serif font-black text-4xl">O</motion.span>;
+  } else if (isMysteryBox) {
+    bgClass = 'bg-accent-light/50';
+    borderClass = 'border-accent-border/50';
+    content = <span className="opacity-50 text-2xl">🎁</span>;
+  }
+
+  if (isWinner) {
+    borderClass = 'border-primary-500 animate-pulse';
+  }
+
+  let targetProps = {};
+  if (isTargetMode) {
+    // If erase, can select opponent's cells
+    if ((activeSkill === 'erase' || activeSkill === 'steal') && value && value !== 'X') { // Assuming 'X' is always the current player triggering skill? Wait, what if currentTurn is O?
+      borderClass = 'border-warning-500 animate-pulse';
+      targetProps = { onClick: () => onClick(idx), className: 'cursor-pointer' };
+    } else {
+      bgClass += ' opacity-50 cursor-not-allowed';
+    }
   }
 
   return (
-    <motion.div
-      className={cellClass}
-      onClick={isEmpty ? onClick : undefined}
-      whileHover={isEmpty ? { scale: 1.03 } : {}}
-      whileTap={isEmpty ? { scale: 0.96 } : {}}
+    <div
+      onClick={() => { if (!isTargetMode) onClick(idx); else if (targetProps.onClick) targetProps.onClick(); }}
+      className={`relative w-full aspect-square rounded-xl border-2 flex items-center justify-center transition-colors ${bgClass} ${borderClass} ${!isTargetMode && !value ? 'hover:bg-primary-50/50 cursor-pointer' : ''} ${targetProps.className || ''}`}
     >
-      {value === 'X' && (
-        <motion.div
-          initial={{ scale: 0, rotate: -20 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-        >
-          <X
-            size={32}
-            strokeWidth={2.5}
-            className={isWinning ? 'text-primary-600' : 'text-primary-500'}
-          />
-        </motion.div>
-      )}
-      {value === 'O' && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-        >
-          <Circle
-            size={28}
-            strokeWidth={2.5}
-            className={isWinning ? 'text-accent' : 'text-accent opacity-80'}
-          />
-        </motion.div>
-      )}
-      {isEmpty && (
-        <span className="font-serif text-[13px] text-ink-faint font-bold">{index + 1}</span>
-      )}
-    </motion.div>
+      {content}
+    </div>
   );
 }

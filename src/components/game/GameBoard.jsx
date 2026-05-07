@@ -1,18 +1,23 @@
-// src/components/game/GameBoard.jsx
 import GameCell from './GameCell';
 
-export default function GameBoard({ board, winLine, onCellClick, disabled }) {
+export default function GameBoard({ board, mysteryBoxes, winLine, onCellClick, skillTargetMode, activeSkill, currentTurn }) {
   return (
-    <div className="grid grid-cols-3 gap-2.5 w-full max-w-[300px] mx-auto">
-      {board.map((value, idx) => (
+    <div className="relative grid grid-cols-3 gap-3 w-full max-w-[350px] mx-auto p-4 bg-surface-card rounded-2xl shadow-sm border border-border">
+      {board.map((val, idx) => (
         <GameCell
           key={idx}
-          index={idx}
-          value={value}
-          isWinning={winLine.includes(idx)}
-          onClick={() => !disabled && onCellClick(idx)}
+          idx={idx}
+          value={val}
+          isWinner={winLine?.includes(idx)}
+          isMysteryBox={mysteryBoxes.includes(idx)}
+          onClick={onCellClick}
+          isTargetMode={skillTargetMode}
+          activeSkill={activeSkill}
+          currentTurn={currentTurn}
         />
       ))}
+      
+      {/* Optional: Add SVG WinLine overlay here if needed */}
     </div>
   );
 }

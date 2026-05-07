@@ -1,62 +1,45 @@
-// src/lib/minimax.js
-import { checkWinner, getAvailableCells } from './gameUtils';
+import { checkWinner, getAvailableCells } from './gameUtils.js';
 
-/**
- * Minimax algorithm for optimal AI move.
- * AI is always 'O', player is always 'X'.
- * @param {Array} board
- * @param {boolean} isMaximizing - true when it's AI's turn
- * @param {number} depth - current depth (used for preferring faster wins)
- * @returns {number} score
- */
-function minimax(board, isMaximizing, depth = 0) {
-  const winner = checkWinner(board);
-  if (winner === 'O') return 10 - depth;
-  if (winner === 'X') return depth - 10;
-  if (winner === 'draw') return 0;
+export function minimax(board, isMaximizing, depth = 0) {
+  const result = checkWinner(board);
+  if (result) {
+    if (result.winner === 'O') return 10 - depth;
+    if (result.winner === 'X') return depth - 10;
+    return 0;
+  }
 
   const available = getAvailableCells(board);
-
   if (isMaximizing) {
     let best = -Infinity;
-    for (const idx of available) {
-      board[idx] = 'O';
+    for (const i of available) {
+      board[i] = 'O';
       best = Math.max(best, minimax(board, false, depth + 1));
-      board[idx] = '';
+      board[i] = null;
     }
     return best;
   } else {
     let best = Infinity;
-    for (const idx of available) {
-      board[idx] = 'X';
+    for (const i of available) {
+      board[i] = 'X';
       best = Math.min(best, minimax(board, true, depth + 1));
-      board[idx] = '';
+      board[i] = null;
     }
     return best;
   }
 }
 
-/**
- * Get the best move index for AI using Minimax.
- * @param {Array} board - current board state
- * @returns {number|null} - best cell index for AI to play
- */
-export function getBestMove(board) {
-  const available = getAvailableCells(board);
-  if (available.length === 0) return null;
-
-  let bestScore = -Infinity;
-  let bestMove  = available[0];
-
-  for (const idx of available) {
-    board[idx] = 'O';
-    const score = minimax(board, false);
-    board[idx] = '';
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove  = idx;
-    }
+export function getAiMove(board, difficulty) {
+  if (difficulty === 'mudah') {
+    const available = getAvailableCells(board);
+    return available[Math.floor(Math.random() * available.length)];
   }
-
+  const available = getAvailableCells(board);
+  let bestScore = -Infinity, bestMove = available[0];
+  for (const i of available) {
+    board[i] = 'O';
+    const score = minimax(board, false);
+    board[i] = null;
+    if (score > bestScore) { bestScore = score; bestMove = i; }
+  }
   return bestMove;
 }

@@ -10,15 +10,26 @@ export default function QuizScreen() {
   const navigate    = useNavigate();
   const {
     soalList, currentSoal, currentIdx, total, isLast,
-    direction, selectedAnswer, isAnswered,
+    loading, direction, selectedAnswer, isAnswered,
     score, selectAnswer, nextSoal, getScorePercent,
   } = useQuiz(topikId);
+
+  if (loading) {
+    return (
+      <PageWrapper>
+        <div className="flex flex-col items-center justify-center min-h-dvh p-4 gap-4">
+          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <p className="font-sans text-[14px] text-ink-muted">Memuat soal...</p>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   if (soalList.length === 0) {
     return (
       <PageWrapper>
         <div className="flex flex-col items-center justify-center min-h-dvh p-4 gap-4">
-          <p className="font-serif text-[18px] font-bold text-ink">Soal tidak tersedia.</p>
+          <p className="font-serif text-[18px] font-bold text-ink text-center">Soal tidak tersedia untuk topik ini.</p>
           <Button variant="ghost" onClick={() => navigate(-1)}>Kembali</Button>
         </div>
       </PageWrapper>

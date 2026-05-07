@@ -1,85 +1,56 @@
-// src/components/game/SoalModal.jsx
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import PilihanButton from '../quiz/PilihanButton';
-import { useState } from 'react';
 
-export default function SoalModal({ isOpen, soal, onAnswer, onClose }) {
-  const [selected, setSelected] = useState(null);
-  const [answered, setAnswered] = useState(false);
+const sheetVariants = {
+  hidden:  { y: '100%', opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
+  exit:    { y: '100%', opacity: 0, transition: { duration: 0.2 } }
+};
+
+export default function SoalModal({ isOpen, soal, onAnswer }) {
+  if (!soal) return null;
 
   return (
     <AnimatePresence>
-      {isOpen && soal && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" />
-
-          {/* Sheet */}
-          <motion.div
-            className="relative w-full max-w-[430px] bg-surface-card rounded-t-xl p-5 pb-8 z-10"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+      {isOpen && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-ink/60 backdrop-blur-sm z-40"
+          />
+          <motion.div 
+            variants={sheetVariants} initial="hidden" animate="visible" exit="exit"
+            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-surface-card rounded-t-3xl p-6 z-50 flex flex-col shadow-2xl max-h-[90vh] overflow-y-auto"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="badge badge-active capitalize">{soal.tingkat}</span>
-              {!answered && (
-                <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-muted">
-                  <X size={18} strokeWidth={1.5} className="text-ink-muted" />
-                </button>
-              )}
-            </div>
-
-            {/* Context / Soal Cerita if any */}
+            <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6" />
+            
             {soal.context && (
-              <div className="bg-surface-muted border-l-4 border-primary-500 p-4 mb-4 rounded-r-md max-h-[150px] overflow-y-auto">
-                <p className="font-sans text-[12px] text-ink leading-[1.6] whitespace-pre-line italic">
+              <div className="bg-surface-muted p-4 rounded-xl mb-4 border-l-4 border-primary-400">
+                <p className="font-sans text-sm italic text-ink-muted leading-relaxed">
                   {soal.context}
                 </p>
               </div>
             )}
-
-            {/* Question */}
-            <p className="font-serif text-[16px] font-bold text-ink leading-[1.45] mb-4">
+            
+            <h3 className="font-serif font-bold text-lg text-ink mb-6 leading-snug">
               {soal.pertanyaan}
-            </p>
-
-            {/* Options */}
-            <div className="flex flex-col gap-2">
-              {(soal.shuffledOptions || []).map((optionText, idx) => {
-                const letter = String.fromCharCode(65 + idx);
-                return (
-                  <PilihanButton
-                    key={letter}
-                    pilihan={`${letter}. ${optionText}`}
-                    isSelected={selected === letter}
-                    isAnswered={answered}
-                    isCorrect={optionText === soal.correctText}
-                    onClick={() => {
-                      if (answered) return;
-                      setSelected(letter);
-                      setAnswered(true);
-                      const isCorrect = optionText === soal.correctText;
-                      setTimeout(() => {
-                        onAnswer(isCorrect);
-                        setSelected(null);
-                        setAnswered(false);
-                      }, 900);
-                    }}
-                  />
-                );
-              })}
+            </h3>
+            
+            <div className="flex flex-col gap-3">
+              {soal.shuffledOptions?.map((opt, i) => (
+                <button
+                  key={i}
+                  onClick={() => onAnswer(opt === soal.correctText)}
+                  className="text-left w-full p-4 rounded-xl border border-border bg-surface-card hover:bg-primary-50 hover:border-primary-200 transition-colors flex items-center gap-3"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-surface-muted flex items-center justify-center font-bold text-ink-muted shrink-0">
+                    {String.fromCharCode(65 + i)}
+                  </div>
+                  <span className="font-sans text-sm text-ink">{opt}</span>
+                </button>
+              ))}
             </div>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

@@ -19,6 +19,11 @@ const quizData = JSON.parse(fs.readFileSync('./src/data/quiz.json', 'utf8'));
 async function seed() {
   console.log('🚀 Starting seed...');
 
+  // 0. Clear existing data to avoid mixing with dummy data
+  console.log('🧹 Clearing old data...');
+  await supabase.from('quiz_questions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('quiz_contexts').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
   for (const topic of quizData) {
     console.log(`\nProcessing topic: ${topic.topik_id}`);
     

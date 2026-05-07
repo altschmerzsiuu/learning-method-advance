@@ -1,6 +1,6 @@
 // src/hooks/useQuiz.js
-import { useState, useCallback } from 'react';
-import quizData from '../data/quiz.json';
+import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 function shuffleArray(array) {
   const newArr = [...array];
@@ -12,71 +12,92 @@ function shuffleArray(array) {
 }
 
 export function useQuiz(topikId) {
-  const topikQuiz = quizData.find(q => q.topik_id === topikId);
-  
-  // Initialize state with grouped and shuffled questions
-  const [sessionSoal, setSessionSoal] = useState(() => {
-    const originalSoal = topikQuiz?.soal ?? [];
-    
-    // 1. Group questions by context (if any)
-    const grouped = [];
-    const contextMap = new Map();
-
-    originalSoal.forEach(q => {
-      if (q.context) {
-        if (!contextMap.has(q.context)) {
-          contextMap.set(q.context, []);
-          grouped.push({ type: 'context', context: q.context, questions: contextMap.get(q.context) });
-        }
-        contextMap.get(q.context).push(q);
-      } else {
-        grouped.push({ type: 'standalone', question: q });
-      }
-    });
-
-    // 2. Shuffle the groups
-    const shuffledGroups = shuffleArray(grouped);
-
-    // 3. Select groups until we have ~20 questions
-    const selectedQuestions = [];
-    let count = 0;
-    const MAX_SOAL = 20;
-
-    for (const item of shuffledGroups) {
-      if (count >= MAX_SOAL) break;
-
-      if (item.type === 'context') {
-        item.questions.forEach(q => {
-          selectedQuestions.push(q);
-          count++;
-        });
-      } else {
-        selectedQuestions.push(item.question);
-        count++;
-      }
-    }
-
-    // 4. Process selected questions (shuffle options, set correct text)
-    return selectedQuestions.map(q => {
-      const cleanPilihan = q.pilihan.map(p => p.replace(/^[A-D]\.\s+/, ''));
-      const shuffledOptions = shuffleArray(cleanPilihan);
-      const originalCorrectLetter = q.jawaban_benar;
-      const correctText = q.pilihan.find(p => p.startsWith(originalCorrectLetter + '.'))?.replace(/^[A-D]\.\s+/, '');
-
-      return {
-        ...q,
-        shuffledOptions,
-        correctText
-      };
-    });
-  });
-
+  const [sessionSoal, setSessionSoal] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentIdx, setCurrentIdx]   = useState(0);
-  const [selectedLetter, setSelected] = useState(null); // 'A', 'B', etc
+  const [selectedLetter, setSelected] = useState(null);
   const [isAnswered, setIsAnswered]   = useState(false);
   const [score, setScore]             = useState(0);
-  const [results, setResults]         = useState([]); // [{soalId, isCorrect}]
-  const [direction, setDirection]     = useState(1);  // for slide animation
+  const [results, setResults]         = useState([]); 
+  const [direction, setDirection]     = useState(1);
+
+  const fetchQuestions = useCallback(async () => {
+    setLoading(true);
+    try {
+      // 1. Fetch from Supabase
+      const { data, error } = await supabase
+        .from('quiz_questions')
+        .select('*, quiz_contexts(*)');
+
+      if (error) throw error;
+
+      // 2. Filter by topikId
+      const filtered = data.filter(q => q.topik_id === topikId);
+
+      // 3. Group questions by context
+      const grouped = [];
+      const contextMap = new Map();
+
+      filtered.forEach(q => {
+        if (q.context_id) {
+          if (!contextMap.has(q.context_id)) {
+            contextMap.set(q.context_id, []);
+            grouped.push({ 
+              type: 'context', 
+              context: q.quiz_contexts?.content || '', 
+              questions: contextMap.get(q.context_id) 
+            });
+          }
+          contextMap.get(q.context_id).push(q);
+        } else {
+          grouped.push({ type: 'standalone', question: q });
+        }
+      });
+
+      // 4. Shuffle the groups
+      const shuffledGroups = shuffleArray(grouped);
+
+      // 5. Select groups until we have ~20 questions
+      const selectedQuestions = [];
+      let count = 0;
+      const MAX_SOAL = 20;
+
+      for (const item of shuffledGroups) {
+        if (count >= MAX_SOAL) break;
+        if (item.type === 'context') {
+          item.questions.forEach(q => {
+            selectedQuestions.push({ ...q, context: item.context });
+            count++;
+          });
+        } else {
+          selectedQuestions.push(item.question);
+          count++;
+        }
+      }
+
+      // 6. Process selected questions (shuffle options)
+      const processed = selectedQuestions.map(q => {
+        // q.options is already a clean array from my seed script
+        const shuffledOptions = shuffleArray(q.options);
+        return {
+          ...q,
+          pertanyaan: q.question_text, // mapping to original field name if used in UI
+          shuffledOptions,
+          correctText: q.correct_answer
+        };
+      });
+
+      setSessionSoal(processed);
+    } catch (err) {
+      console.error('Failed to fetch quiz:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [topikId]);
+
+  useEffect(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
 
   const currentSoal = sessionSoal[currentIdx] ?? null;
   const isLast      = currentIdx === sessionSoal.length - 1;
@@ -112,6 +133,7 @@ export function useQuiz(topikId) {
     currentIdx,
     total,
     isLast,
+    loading,
     direction,
     selectedAnswer: selectedLetter,
     isAnswered,
@@ -120,5 +142,6 @@ export function useQuiz(topikId) {
     selectAnswer,
     nextSoal,
     getScorePercent,
+    retry: fetchQuestions
   };
 }
