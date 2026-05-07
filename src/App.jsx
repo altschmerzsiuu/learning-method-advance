@@ -33,7 +33,6 @@ function AppRoutes() {
         <Route path="/register" element={<RegisterScreen />} />
         
         <Route path="/home" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
-        <Route path="/belajar" element={<Navigate to="/home" replace />} />
         <Route path="/belajar/:topikId" element={<ProtectedRoute><MateriScreen /></ProtectedRoute>} />
         
         <Route path="/quiz/:topikId" element={<ProtectedRoute><QuizScreen /></ProtectedRoute>} />
@@ -54,8 +53,6 @@ function AppRoutes() {
     </AnimatePresence>
   );
 }
-
-
 
 export default function App() {
   return (
