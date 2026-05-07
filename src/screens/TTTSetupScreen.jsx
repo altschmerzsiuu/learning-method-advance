@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopBar, PageWrapper, Card, Button } from '../components/ui';
 
-export default function GameSetupScreen() {
+export default function TTTSetupScreen() {
   const navigate = useNavigate();
   const [mode, setMode] = useState('solo'); // 'solo' | 'team'
   const [difficulty, setDifficulty] = useState('mudah');
@@ -15,7 +15,7 @@ export default function GameSetupScreen() {
   };
 
   const handleStart = () => {
-    navigate('/latihan/think-tac-toe/main', {
+    navigate('/games/think-tac-toe/main', {
       state: {
         mode,
         difficulty: mode === 'solo' ? difficulty : 'mudah', // Team mode ignores difficulty
@@ -27,9 +27,9 @@ export default function GameSetupScreen() {
 
   return (
     <PageWrapper>
-      <TopBar title="Think-Tac-Toe" onBack={() => navigate('/latihan')} />
+      <TopBar title="Think-Tac-Toe" showBack backPath="/games" />
       
-      <div className="px-4 py-6 flex flex-col gap-6">
+      <div className="px-4 py-6 flex flex-col gap-6 pb-24">
         <div>
           <h1 className="font-serif text-[26px] font-black italic text-ink leading-[1.2] mb-1">
             Pilih Mode Bermain

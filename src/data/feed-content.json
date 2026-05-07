@@ -1,0 +1,38 @@
+[
+  {
+    "id": "feed-1",
+    "tipe": "info",
+    "judul": "Apa itu explay?",
+    "isi": "explay adalah media pembelajaran interaktif yang dirancang khusus untuk membantu kamu memahami materi teks eksposisi dengan cara yang seru dan menyenangkan.",
+    "warna": "sky"
+  },
+  {
+    "id": "feed-2",
+    "tipe": "info",
+    "judul": "Kenapa explay?",
+    "isi": "Belajar nggak harus bosen! Di sini kamu bisa belajar sambil bermain game Tic-Tac-Toe yang interaktif. Materinya ringkas, mudah dipahami, dan pastinya seru banget buat belajar bareng teman-temanmu!",
+    "warna": "pink"
+  },
+  {
+    "id": "feed-3",
+    "tipe": "materi",
+    "topikId": "pengenalan",
+    "judul": "Yuk, Mulai Kenali Materinya!",
+    "preview": "Baca dan pahami materi dasar Teks Eksposisi dengan santai sebelum mulai bermain.",
+    "emoji": "📖",
+    "xp": 80
+  },
+  {
+    "id": "feed-4",
+    "tipe": "info",
+    "judul": "Cara Belajar di explay.",
+    "isi": "1. Kenali materinya\n2. Uji pemahaman lewat latihan\n3. Main game biar makin paham\n4. Kumpulkan XP dan jadilah juara!",
+    "warna": "gold"
+  },
+  {
+    "id": "feed-5",
+    "tipe": "quote",
+    "isi": "\"Menulis adalah cara terbaik untuk memahami apa yang kamu pikirkan.\"",
+    "author": "— William Faulkner"
+  }
+]

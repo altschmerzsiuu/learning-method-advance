@@ -62,7 +62,8 @@ export default function HasilQuizScreen() {
 
   return (
     <PageWrapper>
-      <div className="min-h-dvh flex flex-col items-center justify-center px-4 pb-10">
+      <TopBar title="Hasil Kuis" showBack backPath="/materi" />
+      <div className="min-h-[calc(100dvh-56px)] flex flex-col items-center justify-center px-4 pb-10">
 
         {/* Score Circle */}
         <motion.div

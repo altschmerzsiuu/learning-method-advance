@@ -39,27 +39,10 @@ export default function QuizScreen() {
   return (
     <PageWrapper>
       {/* TopBar — no BottomNav on quiz */}
-      <header className="sticky top-0 z-50 bg-surface-card border-b border-border h-[52px] flex items-center px-4 gap-3">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-surface-muted">
-          <X size={20} strokeWidth={1.5} className="text-ink" />
-        </button>
-        {/* Progress dots */}
-        <div className="flex-1 flex items-center justify-center gap-1.5">
-          {soalList.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i < currentIdx ? 'bg-primary-300 w-3' :
-                i === currentIdx ? 'bg-primary-400 w-5' :
-                'bg-border w-3'
-              }`}
-            />
-          ))}
-        </div>
-        <span className="font-sans text-[12px] text-ink-muted w-9 text-right">
-          {currentIdx + 1}/{total}
-        </span>
-      </header>
+      <TopBar 
+        title={`Quiz: ${currentIdx + 1}/${total}`}
+        showBack
+      />
 
       <div className="px-4 pt-5 pb-32">
         <SoalCard

@@ -1,13 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { getSoalLatihan, simpanHasilLatihan } from '../hooks/useLatihan';
 import { PageWrapper, TopBar, ProgressBar } from '../components/ui';
-import SoalCard from '../components/quiz/SoalCard';
-
-function shuffleArray(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
 
 export default function LatihanSoalScreen() {
   const navigate = useNavigate();
@@ -15,67 +10,56 @@ export default function LatihanSoalScreen() {
   
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState({}); // { [idx]: { opsi: 'A', isCorrect: true } }
+  const [answers, setAnswers] = useState([]); // Array of option objects
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     async function loadSoal() {
-      const { data } = await supabase
-        .from('quiz_questions')
-        .select('*')
-        .in('pool', ['latihan', 'both'])
-        .limit(50);
-      
-      if (data && data.length > 0) {
-        setQuestions(shuffleArray(data).slice(0, 20));
+      try {
+        const data = await getSoalLatihan();
+        setQuestions(data);
+      } catch (err) {
+        console.error(err);
       }
       setLoading(false);
     }
     loadSoal();
   }, []);
 
-  const handleAnswer = (opsi, isCorrect) => {
-    setAnswers({
-      ...answers,
-      [currentIdx]: { opsi, isCorrect }
-    });
+  const handleAnswer = async (opt) => {
+    const newAnswers = [...answers];
+    newAnswers[currentIdx] = opt;
+    setAnswers(newAnswers);
     
     // Auto next after 1.2s delay for feedback
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentIdx < questions.length - 1) {
         setCurrentIdx(prev => prev + 1);
       } else {
-        finishLatihan();
+        // Finish
+        setSaving(true);
+        if (user) {
+          try {
+            const hasil = await simpanHasilLatihan(user.id, newAnswers, questions);
+            navigate('/latihan/hasil', {
+              replace: true,
+              state: { ...hasil, questions }
+            });
+          } catch (err) {
+            console.error("Gagal menyimpan hasil:", err);
+            setSaving(false);
+          }
+        }
       }
     }, 1200);
   };
 
-  const finishLatihan = async () => {
-    const correctCount = Object.values(answers).filter(a => a?.isCorrect).length;
-    const score = Math.round((correctCount / questions.length) * 100);
-    const xpEarned = correctCount * 10; // 10 XP per correct answer in latihan
-
-    if (user) {
-      await supabase.from('quiz_results').insert({
-        user_id: user.id,
-        tipe: 'latihan',
-        score,
-        total_soal: questions.length,
-        xp_earned: xpEarned
-      });
-      // Streak and total_xp update will be handled in HasilLatihanScreen or useProfile hook
-    }
-
-    navigate('/latihan/soal/hasil', {
-      replace: true,
-      state: { score, correctCount, total: questions.length, xp: xpEarned }
-    });
-  };
-
-  if (loading) {
+  if (loading || saving) {
     return (
       <div className="flex items-center justify-center min-h-[100dvh]">
         <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
+        {saving && <p className="absolute mt-12 text-xs font-bold text-ink">Menyimpan Hasil...</p>}
       </div>
     );
   }
@@ -89,35 +73,68 @@ export default function LatihanSoalScreen() {
     );
   }
 
-  const q = questions[currentIdx];
-  const hasAnswered = !!answers[currentIdx];
-  const progress = ((currentIdx + (hasAnswered ? 1 : 0)) / questions.length) * 100;
+  const soal = questions[currentIdx];
+  const answeredOpt = answers[currentIdx];
+  const progress = ((currentIdx + (answeredOpt ? 1 : 0)) / questions.length) * 100;
 
   return (
-    <PageWrapper>
+    <PageWrapper className="latihan-screen">
       <TopBar title={`Soal ${currentIdx + 1} / ${questions.length}`} showBack />
       
-      <div className="container py-4 flex flex-col min-h-[calc(100dvh-52px)]">
+      <div className="container py-4 px-4 flex flex-col min-h-[calc(100dvh-56px)]">
         <div className="mb-6">
           <ProgressBar value={progress} />
         </div>
 
-        <div className="flex-1">
-          <SoalCard
-            soal={q}
-            onAnswer={handleAnswer}
-            disabled={hasAnswered}
-          />
-        </div>
+        <div className="flex-1 w-full max-w-md mx-auto">
+          <div className="soal-card p-5">
+            {/* Context (bacaan) jika ada */}
+            {soal.quiz_contexts?.context_text && (
+              <div className="context-box">
+                <div className="context-label">BACAAN</div>
+                <p className="font-serif text-sm leading-relaxed text-ink">{soal.quiz_contexts.context_text}</p>
+              </div>
+            )}
 
-        {hasAnswered && currentIdx < questions.length - 1 && (
-          <button
-            onClick={() => setCurrentIdx(prev => prev + 1)}
-            className="mt-6 w-full py-3 bg-primary-300 hover:bg-primary-600 text-ink font-bold rounded-xl active:scale-95 transition-all"
-          >
-            Lanjut
-          </button>
-        )}
+            {/* Pertanyaan */}
+            <p className="font-sans font-bold text-ink mb-6">{soal.question_text}</p>
+
+            {/* Pilihan Jawaban */}
+            <div className="flex flex-col gap-3">
+              {soal.answer_options?.map((opt, i) => {
+                const isSelected = answeredOpt?.id === opt.id;
+                const showCorrect = !!answeredOpt && opt.is_correct;
+                const showWrong = isSelected && !opt.is_correct;
+                
+                let btnClass = "option-btn text-left p-3 flex items-center gap-3 transition-colors ";
+                if (showCorrect) btnClass += "correct";
+                else if (showWrong) btnClass += "wrong";
+                else if (answeredOpt) btnClass += "opacity-50"; // disable others
+                else btnClass += "hover:bg-surface-muted";
+
+                return (
+                  <button
+                    key={opt.id}
+                    className={btnClass}
+                    onClick={() => !answeredOpt && handleAnswer(opt)}
+                    disabled={!!answeredOpt}
+                  >
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0
+                      ${showCorrect ? 'bg-success-500 text-white' : 
+                        showWrong ? 'bg-rose-500 text-white' : 
+                        'bg-surface-muted text-ink-muted'}
+                    `}>
+                      {['A','B','C','D'][i]}
+                    </span>
+                    <span className={`font-sans text-sm ${showCorrect || showWrong ? 'font-bold' : ''}`}>
+                      {opt.option_text}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </PageWrapper>
   );

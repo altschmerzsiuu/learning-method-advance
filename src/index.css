@@ -189,3 +189,11 @@ a { text-decoration: none; color: inherit; }
   opacity: 0.8;
 }
 
+/* Latihan Styles */
+.latihan-screen { background: var(--color-surface); }
+.soal-card      { background: #FFFFFF; border: 0.5px solid #E8EDF2; border-radius: 12px; }
+.context-box    { background: #F0FAFF; border: 0.5px solid #B9ECFF; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+.context-label  { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: #00A3E8; margin-bottom: 6px; }
+.option-btn     { background: #FFFFFF; border: 1px solid #E8EDF2; border-radius: 10px; }
+.option-btn.correct { background: #DCFCE7; border-color: #BBF7D0; }
+.option-btn.wrong   { background: #FFF0F6; border-color: #FFD6E8; }

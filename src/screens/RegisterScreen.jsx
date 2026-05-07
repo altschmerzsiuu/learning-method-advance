@@ -43,7 +43,7 @@ export default function RegisterScreen() {
       if (data?.user) {
         if (data.session) {
           // If Confirm Email is OFF, session exists.
-          navigate('/home', { replace: true });
+          navigate('/beranda', { replace: true });
         } else {
           // If Confirm Email is ON, session is null.
           setError('Registrasi berhasil! Silakan cek email Anda untuk konfirmasi sebelum Masuk.');

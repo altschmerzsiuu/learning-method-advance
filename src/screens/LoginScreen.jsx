@@ -19,7 +19,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate('/home', { replace: true });
+      navigate('/beranda', { replace: true });
     } catch (err) {
       setError(err.message || 'Gagal login. Cek kembali email dan passwordmu.');
     } finally {

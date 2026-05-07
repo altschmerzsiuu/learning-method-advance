@@ -1,0 +1,132 @@
+[
+  {
+    "id": "ss-01",
+    "judul": "Pentingnya Membaca Buku",
+    "paragraf": [
+      {
+        "id": "p1",
+        "teks": "Membaca buku adalah kegiatan yang sangat bermanfaat bagi perkembangan intelektual seseorang.",
+        "struktur_benar": "tesis"
+      },
+      {
+        "id": "p2",
+        "teks": "Buku mengandung berbagai ilmu pengetahuan yang tidak bisa didapatkan dari sumber lain secara mendalam.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p3",
+        "teks": "Penelitian menunjukkan bahwa anak yang rajin membaca memiliki kemampuan berpikir kritis 40% lebih baik.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p4",
+        "teks": "Oleh karena itu, marilah kita jadikan membaca buku sebagai kebiasaan sehari-hari demi masa depan yang lebih cerah.",
+        "struktur_benar": "penegasan"
+      }
+    ]
+  },
+  {
+    "id": "ss-02",
+    "judul": "Menjaga Kebersihan Lingkungan",
+    "paragraf": [
+      {
+        "id": "p1",
+        "teks": "Kebersihan lingkungan merupakan tanggung jawab bersama yang harus ditanamkan sejak dini.",
+        "struktur_benar": "tesis"
+      },
+      {
+        "id": "p2",
+        "teks": "Lingkungan yang kotor dapat menjadi sarang penyakit dan mengurangi kenyamanan hidup masyarakat.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p3",
+        "teks": "Banyak kasus penyakit demam berdarah terjadi di daerah dengan sanitasi yang buruk.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p4",
+        "teks": "Maka dari itu, membiasakan membuang sampah pada tempatnya adalah langkah awal yang sangat krusial.",
+        "struktur_benar": "penegasan"
+      }
+    ]
+  },
+  {
+    "id": "ss-03",
+    "judul": "Manfaat Olahraga Rutin",
+    "paragraf": [
+      {
+        "id": "p1",
+        "teks": "Olahraga secara rutin adalah kunci utama untuk mendapatkan tubuh yang sehat dan bugar.",
+        "struktur_benar": "tesis"
+      },
+      {
+        "id": "p2",
+        "teks": "Aktivitas fisik membantu melancarkan peredaran darah dan membakar kalori berlebih dalam tubuh.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p3",
+        "teks": "Selain itu, olahraga juga terbukti dapat mengurangi tingkat stres dan meningkatkan hormon kebahagiaan.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p4",
+        "teks": "Kesimpulannya, sempatkanlah berolahraga minimal 30 menit sehari agar kesehatan fisik dan mental tetap terjaga.",
+        "struktur_benar": "penegasan"
+      }
+    ]
+  },
+  {
+    "id": "ss-04",
+    "judul": "Dampak Negatif Begadang",
+    "paragraf": [
+      {
+        "id": "p1",
+        "teks": "Kebiasaan begadang membawa dampak buruk bagi kesehatan tubuh dan produktivitas seseorang.",
+        "struktur_benar": "tesis"
+      },
+      {
+        "id": "p2",
+        "teks": "Kurang tidur mengganggu sistem kekebalan tubuh sehingga kita lebih mudah terserang penyakit.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p3",
+        "teks": "Konsentrasi dan daya ingat juga menurun drastis ketika otak tidak mendapatkan istirahat yang cukup.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p4",
+        "teks": "Oleh sebab itu, hindari kebiasaan begadang dan pastikan tidur 7-8 jam setiap malam demi kesehatan.",
+        "struktur_benar": "penegasan"
+      }
+    ]
+  },
+  {
+    "id": "ss-05",
+    "judul": "Penggunaan Gawai pada Anak",
+    "paragraf": [
+      {
+        "id": "p1",
+        "teks": "Penggunaan gawai yang berlebihan pada anak-anak dapat menghambat perkembangan sosial dan motorik mereka.",
+        "struktur_benar": "tesis"
+      },
+      {
+        "id": "p2",
+        "teks": "Anak cenderung menjadi pasif dan kurang berinteraksi dengan lingkungan sekitarnya.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p3",
+        "teks": "Paparan layar terlalu lama juga berisiko merusak kesehatan mata anak di usia dini.",
+        "struktur_benar": "argumentasi"
+      },
+      {
+        "id": "p4",
+        "teks": "Sebagai solusinya, orang tua harus membatasi waktu layar anak dan memperbanyak aktivitas fisik di luar rumah.",
+        "struktur_benar": "penegasan"
+      }
+    ]
+  }
+]

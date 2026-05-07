@@ -3,19 +3,28 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 
 // Screens
-import HomeScreen      from './screens/HomeScreen';
-import MateriScreen    from './screens/MateriScreen';
+import BerandaScreen      from './screens/BerandaScreen';
+import MateriListScreen    from './screens/MateriListScreen';
+import MateriDetailScreen  from './screens/MateriDetailScreen';
 import QuizScreen      from './screens/QuizScreen';
 import HasilQuizScreen from './screens/HasilQuizScreen';
+
 import LatihanScreen   from './screens/LatihanScreen';
 import LatihanSoalScreen from './screens/LatihanSoalScreen';
 import HasilLatihanScreen from './screens/HasilLatihanScreen';
-import GameSetupScreen from './screens/GameSetupScreen';
-import GameScreen      from './screens/GameScreen';
-import GameHasilScreen from './screens/GameHasilScreen';
-import ProgressScreen  from './screens/ProgressScreen';
+
+import GamesScreen     from './screens/GamesScreen';
+import TTTSetupScreen  from './screens/TTTSetupScreen';
+import TTTGameScreen   from './screens/TTTGameScreen';
+import TTTHasilScreen  from './screens/TTTHasilScreen';
+import SusunStrukturScreen from './screens/SusunStrukturScreen';
+import SusunHasilScreen from './screens/SusunHasilScreen';
+
 import ProfilScreen    from './screens/ProfilScreen';
 import EditProfilScreen from './screens/EditProfilScreen';
+
+import TentangScreen   from './screens/TentangScreen';
+import OnboardingScreen from './screens/OnboardingScreen';
 
 import LoginScreen     from './screens/LoginScreen';
 import RegisterScreen  from './screens/RegisterScreen';
@@ -28,25 +37,30 @@ function AppRoutes() {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/beranda" replace />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
+        <Route path="/onboarding" element={<ProtectedRoute><OnboardingScreen /></ProtectedRoute>} />
+        <Route path="/tentang" element={<TentangScreen />} />
         
-        <Route path="/home" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
-        <Route path="/belajar/:topikId" element={<ProtectedRoute><MateriScreen /></ProtectedRoute>} />
+        <Route path="/beranda" element={<ProtectedRoute><BerandaScreen /></ProtectedRoute>} />
         
-        <Route path="/quiz/:topikId" element={<ProtectedRoute><QuizScreen /></ProtectedRoute>} />
-        <Route path="/quiz/:topikId/hasil" element={<ProtectedRoute><HasilQuizScreen /></ProtectedRoute>} />
+        <Route path="/materi" element={<ProtectedRoute><MateriListScreen /></ProtectedRoute>} />
+        <Route path="/materi/:topikId" element={<ProtectedRoute><MateriDetailScreen /></ProtectedRoute>} />
+        <Route path="/materi/:topikId/quiz" element={<ProtectedRoute><QuizScreen /></ProtectedRoute>} />
+        <Route path="/materi/:topikId/hasil" element={<ProtectedRoute><HasilQuizScreen /></ProtectedRoute>} />
         
         <Route path="/latihan" element={<ProtectedRoute><LatihanScreen /></ProtectedRoute>} />
         <Route path="/latihan/soal" element={<ProtectedRoute><LatihanSoalScreen /></ProtectedRoute>} />
-        <Route path="/latihan/soal/hasil" element={<ProtectedRoute><HasilLatihanScreen /></ProtectedRoute>} />
+        <Route path="/latihan/hasil" element={<ProtectedRoute><HasilLatihanScreen /></ProtectedRoute>} />
         
-        <Route path="/latihan/think-tac-toe" element={<ProtectedRoute><GameSetupScreen /></ProtectedRoute>} />
-        <Route path="/latihan/think-tac-toe/main" element={<ProtectedRoute><GameScreen /></ProtectedRoute>} />
-        <Route path="/latihan/think-tac-toe/hasil" element={<ProtectedRoute><GameHasilScreen /></ProtectedRoute>} />
+        <Route path="/games" element={<ProtectedRoute><GamesScreen /></ProtectedRoute>} />
+        <Route path="/games/think-tac-toe/setup" element={<ProtectedRoute><TTTSetupScreen /></ProtectedRoute>} />
+        <Route path="/games/think-tac-toe/main" element={<ProtectedRoute><TTTGameScreen /></ProtectedRoute>} />
+        <Route path="/games/think-tac-toe/hasil" element={<ProtectedRoute><TTTHasilScreen /></ProtectedRoute>} />
+        <Route path="/games/susun-struktur" element={<ProtectedRoute><SusunStrukturScreen /></ProtectedRoute>} />
+        <Route path="/games/susun-struktur/hasil" element={<ProtectedRoute><SusunHasilScreen /></ProtectedRoute>} />
         
-        <Route path="/progress" element={<ProtectedRoute><ProgressScreen /></ProtectedRoute>} />
         <Route path="/profil" element={<ProtectedRoute><ProfilScreen /></ProtectedRoute>} />
         <Route path="/profil/edit" element={<ProtectedRoute><EditProfilScreen /></ProtectedRoute>} />
       </Routes>

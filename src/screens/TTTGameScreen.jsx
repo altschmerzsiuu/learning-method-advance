@@ -27,13 +27,13 @@ export default function GameScreen() {
   } = useGame(setupData);
 
   useEffect(() => {
-    if (!setupData) navigate('/latihan/think-tac-toe', { replace: true });
+    if (!setupData) navigate('/games/think-tac-toe/setup', { replace: true });
   }, [setupData, navigate]);
 
   useEffect(() => {
     if (gameStatus === 'finished') {
       setTimeout(() => {
-        navigate('/latihan/think-tac-toe/hasil', {
+        navigate('/games/think-tac-toe/hasil', {
           state: { winner, teamX, teamO, mode, difficulty: setupData?.difficulty },
           replace: true
         });
@@ -43,7 +43,7 @@ export default function GameScreen() {
 
   const handleBack = () => {
     if (window.confirm('Yakin ingin keluar? Game yang sedang berjalan akan hilang.')) {
-      navigate('/latihan/think-tac-toe', { replace: true });
+      navigate('/games/think-tac-toe/setup', { replace: true });
     }
   };
 

@@ -1,12 +1,13 @@
 // src/components/ui/BottomNav.jsx
 import { NavLink } from 'react-router-dom';
-import { Home, Target, BarChart2, User } from 'lucide-react';
+import { Home, BookOpen, Target, Gamepad2, User } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/home',     icon: Home,      label: 'Beranda' },
-  { to: '/latihan',  icon: Target,    label: 'Latihan'  },
-  { to: '/progress', icon: BarChart2, label: 'Progress' },
-  { to: '/profil',   icon: User,      label: 'Profil'   },
+  { to: '/beranda',  icon: Home,      label: 'Beranda' },
+  { to: '/materi',   icon: BookOpen,  label: 'Materi'  },
+  { to: '/latihan',  icon: Target,    label: 'Latihan' },
+  { to: '/games',    icon: Gamepad2,  label: 'Games'   },
+  { to: '/profil',   icon: User,      label: 'Profil'  },
 ];
 
 export default function BottomNav() {
@@ -20,12 +21,11 @@ export default function BottomNav() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
                 isActive
-                  ? 'text-primary-300'
-                  : 'text-ink-muted'
+                  ? 'text-[#70D6FF]'
+                  : 'text-[#94A3B8]'
               }`
             }
           >
@@ -33,11 +33,11 @@ export default function BottomNav() {
               <>
                 <Icon
                   size={22}
-                  strokeWidth={isActive ? 2 : 1.5}
+                  strokeWidth={1.5}
                   className="transition-all"
                 />
                 <span
-                  className={`text-[10px] font-sans ${isActive ? 'font-bold' : 'font-normal'}`}
+                  className={`text-[10px] font-sans ${isActive ? 'font-[700]' : 'font-[400]'}`}
                 >
                   {label}
                 </span>

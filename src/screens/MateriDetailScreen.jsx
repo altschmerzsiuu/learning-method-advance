@@ -8,7 +8,7 @@ import { useProgress } from '../hooks/useProgress';
 import materiData from '../data/materi.json';
 import { ChevronRight } from 'lucide-react';
 
-export default function MateriScreen() {
+export default function MateriDetailScreen() {
   const { topikId }           = useParams();
   const navigate              = useNavigate();
   const { getTopikStatus, completeTopik } = useProgress();
@@ -33,7 +33,7 @@ export default function MateriScreen() {
   if (!topik) {
     return (
       <PageWrapper>
-        <TopBar showBack title="Materi" />
+        <TopBar showBack backPath="/materi" title="Materi" />
         <div className="p-4 text-center pt-16">
           <p className="font-serif text-[18px] font-bold text-ink">Topik tidak ditemukan.</p>
         </div>
@@ -44,7 +44,7 @@ export default function MateriScreen() {
   if (status === 'locked') {
     return (
       <PageWrapper>
-        <TopBar showBack title={topik.judul} />
+        <TopBar showBack backPath="/materi" title={topik.judul} />
         <div className="p-4 pt-16 text-center flex flex-col items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-surface-muted flex items-center justify-center">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ink-faint">
@@ -53,7 +53,7 @@ export default function MateriScreen() {
           </div>
           <p className="font-serif text-[18px] font-bold text-ink">Topik ini masih terkunci</p>
           <p className="font-sans text-[13px] text-ink-muted">Selesaikan topik sebelumnya terlebih dahulu.</p>
-          <Button variant="ghost" onClick={() => navigate('/belajar')}>Kembali ke Beranda</Button>
+          <Button variant="ghost" onClick={() => navigate('/materi')}>Kembali ke Materi</Button>
         </div>
       </PageWrapper>
     );
@@ -61,13 +61,14 @@ export default function MateriScreen() {
 
   const handleLanjutQuiz = () => {
     completeTopik(topikId, topik.xp_reward);
-    navigate(`/quiz/${topikId}`);
+    navigate(`/materi/${topikId}/quiz`);
   };
 
   return (
     <PageWrapper>
       <TopBar
         showBack
+        backPath="/materi"
         title={topik.judul}
         rightContent={<Badge variant={status === 'done' ? 'done' : 'active'}>{status === 'done' ? 'Selesai' : 'Aktif'}</Badge>}
       />
