@@ -1,5 +1,13 @@
 import { supabase } from './supabase';
 
+// Global event emitter for badges
+export const badgeEmitter = new EventTarget();
+
+export function triggerBadgeToast(badge) {
+  const event = new CustomEvent('new_badge', { detail: badge });
+  badgeEmitter.dispatchEvent(event);
+}
+
 export async function checkAndAwardBadges(userId, context) {
   // context: { type: 'quiz_done'|'streak'|'xp'|'game_win'|'topics_done'|'score'|'login', value: number }
   

@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-
-// Global event emitter for badges
-export const badgeEmitter = new EventTarget();
-
-export function triggerBadgeToast(badge) {
-  const event = new CustomEvent('new_badge', { detail: badge });
-  badgeEmitter.dispatchEvent(event);
-}
+import { badgeEmitter } from '../../lib/badgeChecker';
 
 export default function BadgeToast() {
   const [badge, setBadge] = useState(null);
