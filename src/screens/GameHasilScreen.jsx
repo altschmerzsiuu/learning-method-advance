@@ -24,7 +24,14 @@ export default function GameHasilScreen() {
   const [xp, setXp] = useState(0);
   const [videoEnded, setVideoEnded] = useState(false);
   const [randomVideo] = useState(() => {
-    const videos = ['v1.mp4', 'v2.mp4', 'v3.mp4'];
+    const videos = [
+      'video1.mp4', 
+      'video2.mp4', 
+      'video3.mp4', 
+      'bintanglima.mp4', 
+      'kasihababa.mp4', 
+      'tenxi.mp4'
+    ];
     return videos[Math.floor(Math.random() * videos.length)];
   });
 
