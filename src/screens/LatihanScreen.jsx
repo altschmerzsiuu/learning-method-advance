@@ -25,17 +25,16 @@ export default function LatihanScreen() {
     async function loadRiwayat() {
       if (!user) return;
       setLoadingRiwayat(true);
+      // Hanya select kolom yang pasti ada di DB
       const { data, error } = await supabase
         .from('quiz_results')
-        .select('id, created_at, score, grade, tipe')
+        .select('id, created_at, score')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-      // Filter latihan di client-side supaya aman kalau kolom tipe belum ada
-      const filtered = data ? data.filter(r => !r.tipe || r.tipe === 'latihan') : [];
         
-      if (!error) {
-        setRiwayat(filtered);
-      } else {
+      if (!error && data) {
+        setRiwayat(data);
+      } else if (error) {
         console.warn('Riwayat latihan tidak dapat dimuat:', error?.message);
         setRiwayat([]);
       }
@@ -113,21 +112,7 @@ export default function LatihanScreen() {
                       <p className="font-sans text-[10px] text-ink-muted">{date}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className="font-serif font-black text-lg text-ink">{r.score}</span>
-                      </div>
-                      {r.grade && (
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                          ${r.grade === 'A' ? 'bg-[#F0FAFF] text-[#00A3E8]' :
-                            r.grade === 'B' ? 'bg-[#DCFCE7] text-[#22C55E]' :
-                            r.grade === 'C' ? 'bg-[#FFFBEB] text-[#D97706]' :
-                            r.grade === 'D' ? 'bg-[#FFEDD5] text-[#EA580C]' :
-                            'bg-[#FFF0F6] text-[#E11D48]'
-                          }
-                        `}>
-                          {r.grade}
-                        </div>
-                      )}
+                      <span className="font-serif font-black text-lg text-ink">{r.score ?? '–'}</span>
                     </div>
                   </div>
                 );
