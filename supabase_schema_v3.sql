@@ -118,6 +118,7 @@ ALTER TABLE public.user_badges ENABLE ROW LEVEL SECURITY;
 -- Drop existing policies to avoid "already exists" errors
 DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can view their own streak" ON public.user_streak;
 DROP POLICY IF EXISTS "Users can update their own streak" ON public.user_streak;
 DROP POLICY IF EXISTS "Users can insert their own streak" ON public.user_streak;
