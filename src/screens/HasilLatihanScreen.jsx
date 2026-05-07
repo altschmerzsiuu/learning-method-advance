@@ -31,10 +31,10 @@ export default function HasilLatihanScreen() {
     const awardAndCheck = async () => {
       if (!user) return;
       
-      // Update XP
-      const { data: profile } = await supabase.from('profiles').select('total_xp').eq('id', user.id).single();
-      if (profile) {
-        await supabase.from('profiles').update({ total_xp: profile.total_xp + xp }).eq('id', user.id);
+      // Update XP (Now in user_streak table)
+      const { data: streakData } = await supabase.from('user_streak').select('total_xp').eq('user_id', user.id).single();
+      if (streakData) {
+        await supabase.from('user_streak').update({ total_xp: streakData.total_xp + xp }).eq('user_id', user.id);
       }
 
       // Check badges

@@ -17,14 +17,11 @@ export function useStreak() {
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 6);
 
-    const { data: profile } = await supabase.from('profiles').select('total_xp').eq('id', user.id).single();
     const { data: streakData } = await supabase.from('user_streak').select('*').eq('user_id', user.id).single();
 
     if (streakData) {
       setStreak(streakData.streak_count || 0);
-    }
-    if (profile) {
-      setTotalXP(profile.total_xp || 0);
+      setTotalXP(streakData.total_xp || 0);
     }
 
     // Determine week dots (very simple mock based on streak count for now)

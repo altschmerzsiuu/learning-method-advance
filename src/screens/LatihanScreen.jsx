@@ -12,7 +12,7 @@ export default function LatihanScreen() {
 
   useEffect(() => {
     if (user) {
-      supabase.from('profiles').select('total_xp').eq('id', user.id).single()
+      supabase.from('user_streak').select('total_xp').eq('user_id', user.id).single()
         .then(({ data }) => setXp(data?.total_xp || 0));
     }
   }, [user]);

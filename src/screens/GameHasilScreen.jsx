@@ -63,10 +63,10 @@ export default function GameHasilScreen() {
           xp_earned: earnedXp
         });
         
-        // Update user XP
-        const { data: profile } = await supabase.from('profiles').select('total_xp').eq('id', session.user.id).single();
-        if (profile) {
-          await supabase.from('profiles').update({ total_xp: profile.total_xp + earnedXp }).eq('id', session.user.id);
+        // Update user XP (Now in user_streak table)
+        const { data: streakData } = await supabase.from('user_streak').select('total_xp').eq('user_id', session.user.id).single();
+        if (streakData) {
+          await supabase.from('user_streak').update({ total_xp: streakData.total_xp + earnedXp }).eq('user_id', session.user.id);
         }
 
         // Badges check

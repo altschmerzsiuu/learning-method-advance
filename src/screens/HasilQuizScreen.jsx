@@ -23,10 +23,10 @@ export default function HasilQuizScreen() {
     if (!user) return;
 
     const processResults = async () => {
-      // 1. Update Profile XP
-      const { data: profile } = await supabase.from('profiles').select('total_xp').eq('id', user.id).single();
-      if (profile) {
-        await supabase.from('profiles').update({ total_xp: profile.total_xp + xpEarned }).eq('id', user.id);
+      // 1. Update Profile XP (Now in user_streak table)
+      const { data: streakData } = await supabase.from('user_streak').select('total_xp').eq('user_id', user.id).single();
+      if (streakData) {
+        await supabase.from('user_streak').update({ total_xp: streakData.total_xp + xpEarned }).eq('user_id', user.id);
       }
       
       // 2. Check and Award Badges
