@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, Card } from '../ui';
-import { useAuth } from '../../hooks/useAuth';
+import { Button, Card } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
 
 export default function LoginScreen() {
   const navigate = useNavigate();
