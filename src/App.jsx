@@ -38,7 +38,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.DEV ? '/' : '/Learning-Method-RnD'}>
+    <BrowserRouter basename="/">
       <AppRoutes />
     </BrowserRouter>
   );
