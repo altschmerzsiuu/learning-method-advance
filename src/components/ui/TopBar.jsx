@@ -30,7 +30,7 @@ export default function TopBar({
             <ArrowLeft size={20} strokeWidth={2} className="text-ink" />
           </button>
         ) : logo ? (
-          <img src="/logo-fkip.jpg" alt="Logo" className="h-8 w-8 object-contain rounded-sm" />
+          <img src="/fkip-logo.jpeg" alt="Logo" className="h-8 w-8 object-contain rounded-sm" />
         ) : null}
       </div>
 
