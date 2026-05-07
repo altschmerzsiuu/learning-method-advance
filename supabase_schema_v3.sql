@@ -160,30 +160,33 @@ CREATE POLICY "Users can insert their own badges" ON public.user_badges FOR INSE
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  -- 1. Insert profile
-  INSERT INTO public.profiles (id, nama, kelas, sekolah)
-  VALUES (
-    NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'nama', 'Siswa'),
-    COALESCE(NEW.raw_user_meta_data->>'kelas', 'VII'),
-    COALESCE(NEW.raw_user_meta_data->>'sekolah', '')
-  );
+  BEGIN
+    INSERT INTO public.profiles (id, nama, kelas, sekolah)
+    VALUES (
+      NEW.id,
+      COALESCE(NEW.raw_user_meta_data->>'nama', 'Siswa'),
+      COALESCE(NEW.raw_user_meta_data->>'kelas', 'VII'),
+      COALESCE(NEW.raw_user_meta_data->>'sekolah', '')
+    );
+  EXCEPTION WHEN OTHERS THEN END;
 
-  -- 2. Insert streak
-  INSERT INTO public.user_streak (user_id, streak_count, total_xp)
-  VALUES (NEW.id, 0, 0);
+  BEGIN
+    INSERT INTO public.user_streak (user_id, streak_count, total_xp)
+    VALUES (NEW.id, 0, 0);
+  EXCEPTION WHEN OTHERS THEN END;
 
-  -- 3. Insert progress for all topics
-  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'tesis', 'active');
-  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'argumentasi', 'locked');
-  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'penegasan', 'locked');
-  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'kaidah', 'locked');
-  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'langkah', 'locked');
-  INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'contoh', 'locked');
+  BEGIN
+    INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'tesis', 'active');
+    INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'argumentasi', 'locked');
+    INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'penegasan', 'locked');
+    INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'kaidah', 'locked');
+    INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'langkah', 'locked');
+    INSERT INTO public.user_progress (user_id, topik_id, status) VALUES (NEW.id, 'contoh', 'locked');
+  EXCEPTION WHEN OTHERS THEN END;
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Recreate trigger
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
