@@ -3,8 +3,6 @@ import { checkAndAwardBadges, triggerBadgeToast } from '../lib/badgeChecker';
 
 export async function getSoalLatihan() {
   try {
-    // Step 1: ambil semua soal dulu tanpa filter pool
-    // (fallback jika field 'pool' belum di-set di semua row)
     const { data, error } = await supabase
       .from('quiz_questions')
       .select(`
@@ -13,13 +11,10 @@ export async function getSoalLatihan() {
         topik_id,
         tingkat,
         pool,
+        options,
+        correct_answer,
         quiz_contexts (
-          context_text
-        ),
-        answer_options (
-          id,
-          option_text,
-          is_correct
+          content
         )
       `)
       .order('created_at', { ascending: false });
@@ -29,14 +24,25 @@ export async function getSoalLatihan() {
       throw new Error('Tidak ada soal tersedia');
     }
 
-    // Step 2: filter pool jika field ada, fallback ke semua soal
+    // Filter pool: latihan or both
     const filtered = data.filter(q =>
       !q.pool || q.pool === 'latihan' || q.pool === 'both'
     );
     const pool = filtered.length >= 20 ? filtered : data;
 
-    // Step 3: shuffle dan ambil 20
-    return shuffleArray(pool).slice(0, 20);
+    // Shuffle dan ambil 20
+    const selected = shuffleArray(pool).slice(0, 20);
+
+    // Normalize: transform options string-array into answer_options-like objects
+    return selected.map(q => {
+      const opts = Array.isArray(q.options) ? q.options : [];
+      const answer_options = shuffleArray(opts).map((text, i) => ({
+        id: `${q.id}_${i}`,
+        option_text: text,
+        is_correct: text === q.correct_answer,
+      }));
+      return { ...q, answer_options };
+    });
   } catch (err) {
     console.error('getSoalLatihan error:', err);
     throw err;
@@ -53,18 +59,19 @@ function shuffleArray(arr) {
 }
 
 export async function simpanHasilLatihan(userId, jawabanUser, soalList) {
-  const totalSoal = soalList.length;  // usually 20
+  const totalSoal = soalList.length;
   let benar = 0;
 
   const detail = soalList.map((soal, i) => {
+    // answer_options is now normalized by getSoalLatihan
     const jawabanBenar = soal.answer_options.find(o => o.is_correct);
     const pilihanUser = jawabanUser[i];
     const isBenar = pilihanUser?.id === jawabanBenar?.id;
     if (isBenar) benar++;
     return {
       soal_id: soal.id,
-      pilihan_user: pilihanUser?.id,
-      jawaban_benar: jawabanBenar?.id,
+      pilihan_user: pilihanUser?.option_text,
+      jawaban_benar: jawabanBenar?.option_text,
       is_benar: isBenar,
     };
   });
