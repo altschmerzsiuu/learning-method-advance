@@ -31,26 +31,36 @@ export default function EditProfilScreen() {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const { success } = await updateProfile({ 
-      nama, 
-      kelas, 
-      sekolah, 
-      tanggal_lahir: tanggalLahir 
-    });
-    if (success) {
+    try {
+      await updateProfile({ 
+        nama, 
+        kelas, 
+        sekolah, 
+        tanggal_lahir: tanggalLahir || null 
+      });
       alert('Profil berhasil diperbarui!');
       navigate('/profil');
+    } catch (err) {
+      console.error("Gagal update profil:", err);
+      alert('Gagal menyimpan profil: ' + err.message);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const { success } = await uploadAvatar(file);
-    if (success) alert('Foto berhasil diperbarui!');
-    setUploading(false);
+    try {
+      await uploadAvatar(file);
+      alert('Foto berhasil diperbarui!');
+    } catch (err) {
+      console.error("Gagal upload avatar:", err);
+      alert('Gagal mengupload foto: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (profileLoading) return <div className="p-6 text-center">Memuat...</div>;
