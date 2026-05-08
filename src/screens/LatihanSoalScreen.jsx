@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getSoalLatihan, simpanHasilLatihan } from '../hooks/useLatihan';
-import { PageWrapper, TopBar, ProgressBar } from '../components/ui';
+import { PageWrapper, TopBar, ProgressBar, Toast } from '../components/ui';
+import { toast } from '../lib/toast';
 
 export default function LatihanSoalScreen() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export default function LatihanSoalScreen() {
             });
           } catch (err) {
             console.error("Gagal menyimpan hasil:", err);
+            toast.error('Gagal menyimpan hasil: ' + err.message);
             setSaving(false);
           }
         }

@@ -29,6 +29,7 @@ import OnboardingScreen from './screens/OnboardingScreen';
 import LoginScreen     from './screens/LoginScreen';
 import RegisterScreen  from './screens/RegisterScreen';
 import ProtectedRoute  from './components/auth/ProtectedRoute';
+import { Toast }      from './components/ui';
 import BadgeToast      from './components/profil/BadgeToast';
 
 function AppRoutes() {
@@ -72,6 +73,7 @@ export default function App() {
   return (
     <BrowserRouter basename="/">
       <AppRoutes />
+      <Toast />
       <BadgeToast />
     </BrowserRouter>
   );

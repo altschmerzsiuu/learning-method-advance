@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { PageWrapper, TopBar, Card, Button } from '../components/ui';
+import { toast } from '../lib/toast';
 import { Camera, Mail, Lock, Calendar } from 'lucide-react';
 
 export default function EditProfilScreen() {
@@ -38,11 +39,11 @@ export default function EditProfilScreen() {
         sekolah, 
         tanggal_lahir: tanggalLahir || null 
       });
-      alert('Profil berhasil diperbarui!');
+      toast.success('Profil berhasil diperbarui!');
       navigate('/profil');
     } catch (err) {
       console.error("Gagal update profil:", err);
-      alert('Gagal menyimpan profil: ' + err.message);
+      toast.error('Gagal menyimpan profil: ' + err.message);
     } finally {
       setSaving(false);
     }
@@ -54,10 +55,10 @@ export default function EditProfilScreen() {
     setUploading(true);
     try {
       await uploadAvatar(file);
-      alert('Foto berhasil diperbarui!');
+      toast.success('Foto berhasil diperbarui!');
     } catch (err) {
       console.error("Gagal upload avatar:", err);
-      alert('Gagal mengupload foto: ' + err.message);
+      toast.error('Gagal mengupload foto: ' + err.message);
     } finally {
       setUploading(false);
     }
