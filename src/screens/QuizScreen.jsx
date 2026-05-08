@@ -76,7 +76,7 @@ export default function QuizScreen() {
           {isLast ? (
             <Button
               fullWidth
-              onClick={() => navigate(`/quiz/${topikId}/hasil`, { state: { score, total, scorePercent: getScorePercent() } })}
+              onClick={() => navigate(`/materi/${topikId}/hasil`, { state: { score, total, scorePercent: getScorePercent() } })}
             >
               Lihat Hasil
             </Button>

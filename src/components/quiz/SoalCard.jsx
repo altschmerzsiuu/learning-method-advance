@@ -66,7 +66,7 @@ export default function SoalCard({
 
         {/* Explanation (shown after answer) */}
         <AnimatePresence>
-          {isAnswered && (
+          {isAnswered && soal.penjelasan && soal.penjelasan.trim() !== '' && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
