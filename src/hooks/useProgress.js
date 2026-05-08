@@ -37,28 +37,51 @@ export function useProgress() {
   const completeTopik = useCallback(async (topikId) => {
     if (!user) return;
 
-    // 1. Update Current Topik to 'done'
     const sorted = [...materiData].sort((a, b) => a.urutan - b.urutan);
     const idx = sorted.findIndex(t => t.id === topikId);
-    
-    await supabase.from('user_progress').upsert({
-      user_id: user.id,
-      topik_id: topikId,
-      status: 'done',
-      completed_at: new Date().toISOString()
-    }, { onConflict: 'user_id, topik_id' });
 
-    // 2. Update Next Topik to 'active' if it exists and is locked
+    // 1. Check if current topik already exists in DB
+    const { data: existingCurrent } = await supabase
+      .from('user_progress')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('topik_id', topikId)
+      .single();
+
+    if (existingCurrent) {
+      await supabase.from('user_progress').update({
+        status: 'done',
+        completed_at: new Date().toISOString()
+      }).eq('id', existingCurrent.id);
+    } else {
+      await supabase.from('user_progress').insert({
+        user_id: user.id,
+        topik_id: topikId,
+        status: 'done',
+        completed_at: new Date().toISOString()
+      });
+    }
+
+    // 2. Update Next Topik to 'active' if it exists
     if (sorted[idx + 1]) {
       const nextId = sorted[idx + 1].id;
-      // We don't overwrite if it's already done
-      const { data } = await supabase.from('user_progress').select('status').eq('user_id', user.id).eq('topik_id', nextId).single();
-      if (!data || data.status === 'locked') {
-        await supabase.from('user_progress').upsert({
+      const { data: existingNext } = await supabase
+        .from('user_progress')
+        .select('id, status')
+        .eq('user_id', user.id)
+        .eq('topik_id', nextId)
+        .single();
+        
+      if (existingNext) {
+        if (existingNext.status === 'locked') {
+          await supabase.from('user_progress').update({ status: 'active' }).eq('id', existingNext.id);
+        }
+      } else {
+        await supabase.from('user_progress').insert({
           user_id: user.id,
           topik_id: nextId,
           status: 'active'
-        }, { onConflict: 'user_id, topik_id' });
+        });
       }
     }
 

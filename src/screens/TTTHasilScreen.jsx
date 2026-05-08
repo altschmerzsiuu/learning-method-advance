@@ -112,21 +112,33 @@ export default function TTTHasilScreen() {
         {resultStatus === 'menang' && (
           <div className="flex-1 flex flex-col items-center justify-center gap-6">
             {!videoEnded ? (
-              <div className="w-full aspect-video bg-black rounded-3xl overflow-hidden relative shadow-lg">
-                <video
-                  ref={videoRef}
-                  src={`/videos/${randomVideo}`}
-                  autoPlay
-                  playsInline
-                  onEnded={() => setVideoEnded(true)}
-                  className="w-full h-full object-cover"
-                />
-                <button
-                  className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 text-white rounded-full text-xs font-bold backdrop-blur-sm border border-white/20"
-                  onClick={() => setVideoEnded(true)}
+              <div className="flex flex-col items-center gap-4 w-full">
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center"
                 >
-                  Skip →
-                </button>
+                  <h1 className={`font-serif font-black text-2xl mb-1 ${titleColor}`}>
+                    {title}
+                  </h1>
+                  <p className="font-sans text-sm text-ink-muted">Tonton perayaan kemenanganmu! 🎉</p>
+                </motion.div>
+                <div className="w-full aspect-video bg-black rounded-3xl overflow-hidden relative shadow-lg">
+                  <video
+                    ref={videoRef}
+                    src={`/videos/${randomVideo}`}
+                    autoPlay
+                    playsInline
+                    onEnded={() => setVideoEnded(true)}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 text-white rounded-full text-xs font-bold backdrop-blur-sm border border-white/20"
+                    onClick={() => setVideoEnded(true)}
+                  >
+                    Skip →
+                  </button>
+                </div>
               </div>
             ) : (
               <motion.div
