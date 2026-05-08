@@ -123,11 +123,11 @@ export default function HasilQuizScreen() {
           transition={{ delay: 0.45 }}
           className="w-full flex flex-col gap-2.5"
         >
-          <Button fullWidth onClick={() => navigate('/belajar')}>
+          <Button fullWidth onClick={() => navigate('/materi')}>
             <span>Lanjut Belajar</span>
             <ChevronRight size={18} strokeWidth={2} />
           </Button>
-          <Button fullWidth variant="ghost" onClick={() => navigate(`/quiz/${topikId}`)}>
+          <Button fullWidth variant="ghost" onClick={() => navigate(`/materi/${topikId}/quiz`)}>
             <RotateCcw size={16} strokeWidth={1.5} />
             <span>Ulangi Quiz</span>
           </Button>
