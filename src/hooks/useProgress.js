@@ -12,11 +12,16 @@ function getInitialProgress() {
 
 export function useProgress() {
   const [progress, setProgress] = useState(getInitialProgress());
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
     async function syncProgress() {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
 
       const { data, error } = await supabase
         .from('user_progress')
@@ -30,6 +35,7 @@ export function useProgress() {
         });
         setProgress(dbProgress);
       }
+      setLoading(false);
     }
     syncProgress();
   }, [user]);
@@ -100,5 +106,5 @@ export function useProgress() {
   const getTopikStatus = useCallback((id) => progress[id]?.status ?? 'locked', [progress]);
   const getCompletedCount = useCallback(() => Object.values(progress).filter(p => p.status === 'done').length, [progress]);
 
-  return { progress, getTopikStatus, completeTopik, getCompletedCount };
+  return { progress, getTopikStatus, completeTopik, getCompletedCount, loading };
 }

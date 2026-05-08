@@ -60,20 +60,18 @@ export default function MateriListScreen() {
                   ${!isUnlocked ? 'opacity-60 grayscale cursor-not-allowed' : 'hover:border-primary-200 hover:shadow-sm'}
                 `}
               >
-                {/* Nomor besar */}
-                <div className={`font-serif font-black text-4xl w-8 text-center
-                  ${isDone ? 'text-success-500/20' : isUnlocked ? 'text-primary-300/20' : 'text-ink-muted/10'}
+                <div className={`font-serif font-black text-4xl w-10 h-10 flex items-center justify-center shrink-0
+                  ${isDone ? 'text-success' : isUnlocked ? 'text-primary-300/20' : 'text-ink-muted/10'}
                 `}>
-                  {index + 1}
+                  {isDone ? <CheckCircle2 size={32} /> : index + 1}
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    {(() => {
                       const TopikIcon = TOPIK_ICONS[topik.id];
                       return TopikIcon ? (
-                        <div className={`w-6 h-6 flex items-center justify-center rounded-md ${isDone ? 'text-success-500' : isUnlocked ? 'text-primary-500' : 'text-ink-faint'}`}>
-                          <TopikIcon size={16} strokeWidth={1.5} />
+                        <div className={`w-6 h-6 flex items-center justify-center rounded-md ${isDone ? 'text-success bg-success/10' : isUnlocked ? 'text-primary-500 bg-primary-50' : 'text-ink-faint bg-surface-muted'}`}>
+                          <TopikIcon size={14} strokeWidth={2} />
                         </div>
                       ) : null;
                     })()}

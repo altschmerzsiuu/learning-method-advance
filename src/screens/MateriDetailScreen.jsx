@@ -11,7 +11,7 @@ import { ChevronRight } from 'lucide-react';
 export default function MateriDetailScreen() {
   const { topikId }           = useParams();
   const navigate              = useNavigate();
-  const { getTopikStatus, completeTopik } = useProgress();
+  const { getTopikStatus, completeTopik, loading } = useProgress();
   const [showStickyBtn, setShowStickyBtn] = useState(false);
   const contentRef = useRef(null);
 
@@ -36,6 +36,17 @@ export default function MateriDetailScreen() {
         <TopBar showBack backPath="/materi" title="Materi" />
         <div className="p-4 text-center pt-16">
           <p className="font-serif text-[18px] font-bold text-ink">Topik tidak ditemukan.</p>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (loading) {
+    return (
+      <PageWrapper>
+        <TopBar showBack backPath="/materi" title="Memuat Materi..." />
+        <div className="flex items-center justify-center min-h-[calc(100vh-56px)]">
+          <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
         </div>
       </PageWrapper>
     );

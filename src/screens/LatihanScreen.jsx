@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useProgress } from '../hooks/useProgress';
 import { useStreak } from '../hooks/useStreak';
 import { useProfile } from '../hooks/useProfile';
+import materiData from '../data/materi.json';
 
 export default function LatihanScreen() {
   const navigate = useNavigate();
@@ -17,8 +18,8 @@ export default function LatihanScreen() {
   const [riwayat, setRiwayat] = useState([]);
   const [loadingRiwayat, setLoadingRiwayat] = useState(true);
 
-  const topikIds = ['pengenalan', 'struktur', 'kebahasaan', 'jenis', 'analisis', 'menulis'];
-  const doneCount = topikIds.filter(id => progress[id]?.completed).length;
+  const topikIds = materiData.map(m => m.id);
+  const doneCount = topikIds.filter(id => progress[id]?.status === 'done').length;
   const isUnlocked = doneCount >= 3;
 
   useEffect(() => {
