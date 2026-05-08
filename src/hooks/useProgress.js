@@ -41,12 +41,13 @@ export function useProgress() {
     const idx = sorted.findIndex(t => t.id === topikId);
 
     // 1. Check if current topik already exists in DB
-    const { data: existingCurrent } = await supabase
+    const { data: currentData } = await supabase
       .from('user_progress')
       .select('id')
       .eq('user_id', user.id)
-      .eq('topik_id', topikId)
-      .single();
+      .eq('topik_id', topikId);
+      
+    const existingCurrent = currentData && currentData.length > 0 ? currentData[0] : null;
 
     if (existingCurrent) {
       await supabase.from('user_progress').update({
@@ -65,12 +66,13 @@ export function useProgress() {
     // 2. Update Next Topik to 'active' if it exists
     if (sorted[idx + 1]) {
       const nextId = sorted[idx + 1].id;
-      const { data: existingNext } = await supabase
+      const { data: nextData } = await supabase
         .from('user_progress')
         .select('id, status')
         .eq('user_id', user.id)
-        .eq('topik_id', nextId)
-        .single();
+        .eq('topik_id', nextId);
+        
+      const existingNext = nextData && nextData.length > 0 ? nextData[0] : null;
         
       if (existingNext) {
         if (existingNext.status === 'locked') {

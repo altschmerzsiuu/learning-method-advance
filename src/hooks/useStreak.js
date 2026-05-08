@@ -17,7 +17,8 @@ export function useStreak() {
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 6);
 
-    const { data: streakData } = await supabase.from('user_streak').select('*').eq('user_id', user.id).single();
+    const { data: streakDataArray } = await supabase.from('user_streak').select('*').eq('user_id', user.id).limit(1);
+    const streakData = streakDataArray && streakDataArray.length > 0 ? streakDataArray[0] : null;
 
     if (streakData) {
       setStreak(streakData.streak_count || 0);

@@ -15,15 +15,15 @@ export function useProfile(userId) {
     
     try {
       const [profRes, streakRes] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', userId).single(),
-        supabase.from('user_streak').select('*').eq('user_id', userId).single()
+        supabase.from('profiles').select('*').eq('id', userId).limit(1),
+        supabase.from('user_streak').select('*').eq('user_id', userId).limit(1)
       ]);
 
       if (profRes.error) console.warn('Profile fetch error:', profRes.error);
       if (streakRes.error) console.warn('Streak fetch error:', streakRes.error);
 
-      if (profRes.data) setProfile(profRes.data);
-      if (streakRes.data) setStreak(streakRes.data);
+      if (profRes.data && profRes.data.length > 0) setProfile(profRes.data[0]);
+      if (streakRes.data && streakRes.data.length > 0) setStreak(streakRes.data[0]);
     } catch (err) {
       console.error('Network error in useProfile:', err);
       setError(err);
