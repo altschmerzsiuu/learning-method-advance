@@ -10,6 +10,7 @@ export default function ParagrafDrag({ id, teks, status }) {
 
   const style = {
     transform: CSS.Translate.toString(transform),
+    touchAction: 'none', // Prevent screen scrolling when dragging on mobile
   };
 
   let bgClass = "bg-white border-border text-ink";

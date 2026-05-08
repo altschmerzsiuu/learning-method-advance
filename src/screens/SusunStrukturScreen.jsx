@@ -25,10 +25,9 @@ export default function SusunStrukturScreen() {
   const [hasChecked, setHasChecked] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Configure sensors for drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+    useSensor(TouchSensor, { activationConstraint: { distance: 5 } })
   );
 
   const handleCekJawaban = async () => {

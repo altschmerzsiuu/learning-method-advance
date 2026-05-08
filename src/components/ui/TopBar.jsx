@@ -33,14 +33,14 @@ export default function TopBar({
       </div>
 
       {/* Middle Section: Halo nickname (main pages) or title (sub pages) */}
-      <div className="flex-1 overflow-hidden flex flex-col justify-center items-center">
+      <div className="absolute left-1/2 -translate-x-1/2 flex flex-col justify-center items-center pointer-events-none">
         {userName ? (
           <div className="flex flex-col items-center leading-none">
             <span className="text-[9px] uppercase tracking-widest font-bold text-ink-muted">Halo,</span>
-            <span className="font-serif font-black text-sm text-ink truncate mt-0.5">{userName}</span>
+            <span className="font-serif font-black text-sm text-ink truncate mt-0.5 max-w-[150px] text-center">{userName}</span>
           </div>
         ) : title ? (
-          <h1 className="font-serif font-bold text-sm text-ink truncate">{title}</h1>
+          <h1 className="font-serif font-bold text-sm text-ink truncate max-w-[150px] text-center">{title}</h1>
         ) : null}
       </div>
 

@@ -1,17 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopBar, PageWrapper, Card, Button } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 
 export default function TTTSetupScreen() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id);
+  const defaultName = profile?.nama || user?.email?.split('@')[0] || 'Pemain';
+
   const [mode, setMode] = useState('solo'); // 'solo' | 'team'
   const [difficulty, setDifficulty] = useState('mudah');
   const [teamX, setTeamX] = useState('');
   const [teamO, setTeamO] = useState('');
 
+  // Auto-fill nama saat profile load
+  useEffect(() => {
+    if (defaultName && !teamX) {
+      setTeamX(defaultName);
+    }
+  }, [defaultName]);
+
   const isFormValid = () => {
-    if (mode === 'solo') return teamX.trim().length > 0;
-    return teamX.trim().length > 0 && teamO.trim().length > 0;
+    return true; // Inputs are now optional, handled by fallbacks
   };
 
   const handleStart = () => {
@@ -19,8 +31,8 @@ export default function TTTSetupScreen() {
       state: {
         mode,
         difficulty: mode === 'solo' ? difficulty : 'mudah', // Team mode ignores difficulty
-        teamX: teamX || 'Pemain',
-        teamO: mode === 'solo' ? 'AI' : teamO || 'Lawan'
+        teamX: teamX.trim() || defaultName,
+        teamO: mode === 'solo' ? 'AI' : teamO.trim() || 'Lawan'
       }
     });
   };
@@ -84,7 +96,7 @@ export default function TTTSetupScreen() {
             type="text"
             value={teamX}
             onChange={(e) => setTeamX(e.target.value)}
-            placeholder="Masukkan nama..."
+            placeholder={defaultName}
             className="w-full px-4 py-3 bg-surface-card border border-border rounded-xl font-sans text-sm focus:border-primary-300 focus:outline-none transition-colors"
           />
         </div>

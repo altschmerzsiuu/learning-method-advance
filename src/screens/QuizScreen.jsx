@@ -1,7 +1,7 @@
 // src/screens/QuizScreen.jsx
 import { useParams, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
-import { PageWrapper, Button } from '../components/ui';
+import { PageWrapper, Button, TopBar } from '../components/ui';
 import SoalCard from '../components/quiz/SoalCard';
 import { useQuiz } from '../hooks/useQuiz';
 
