@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { Zap, RotateCcw, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
-import { PageWrapper, Button } from '../components/ui';
+import { PageWrapper, Button, TopBar } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { checkAndAwardBadges, triggerBadgeToast } from '../lib/badgeChecker';
