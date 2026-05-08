@@ -25,7 +25,7 @@ export default function MateriListScreen() {
 
   if (loading) return <div className="p-6 text-center text-ink-muted">Memuat...</div>;
 
-  const totalCompleted = materiData.filter(m => progress[m.id]?.completed).length;
+  const totalCompleted = materiData.filter(m => progress[m.id]?.status === 'done').length;
 
   return (
     <PageWrapper bottomNav>
@@ -48,8 +48,8 @@ export default function MateriListScreen() {
         {/* Topik List */}
         <div className="flex flex-col gap-3">
           {materiData.map((topik, index) => {
-            const isDone = progress[topik.id]?.completed;
-            const isUnlocked = progress[topik.id]?.unlocked || topik.id === 'pengenalan';
+            const isDone = progress[topik.id]?.status === 'done';
+            const isUnlocked = progress[topik.id]?.status === 'active' || progress[topik.id]?.status === 'done';
             
             return (
               <button
