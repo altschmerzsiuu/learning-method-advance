@@ -20,9 +20,11 @@ export function useQuiz(topikId) {
   const [score, setScore]             = useState(0);
   const [results, setResults]         = useState([]); 
   const [direction, setDirection]     = useState(1);
+  const [error, setError]             = useState(null);
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       // 1. Fetch from Supabase
       const { data, error } = await supabase
@@ -90,6 +92,7 @@ export function useQuiz(topikId) {
       setSessionSoal(processed);
     } catch (err) {
       console.error('Failed to fetch quiz:', err);
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -142,6 +145,7 @@ export function useQuiz(topikId) {
     selectAnswer,
     nextSoal,
     getScorePercent,
+    error,
     retry: fetchQuestions
   };
 }

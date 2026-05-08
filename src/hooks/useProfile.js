@@ -6,20 +6,30 @@ export function useProfile(userId) {
   const [profile, setProfile] = useState(null);
   const [streak, setStreak] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
+    setError(null);
     
-    const [profRes, streakRes] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).single(),
-      supabase.from('user_streak').select('*').eq('user_id', userId).single()
-    ]);
+    try {
+      const [profRes, streakRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', userId).single(),
+        supabase.from('user_streak').select('*').eq('user_id', userId).single()
+      ]);
 
-    if (profRes.data) setProfile(profRes.data);
-    if (streakRes.data) setStreak(streakRes.data);
-    
-    setLoading(false);
+      if (profRes.error) console.warn('Profile fetch error:', profRes.error);
+      if (streakRes.error) console.warn('Streak fetch error:', streakRes.error);
+
+      if (profRes.data) setProfile(profRes.data);
+      if (streakRes.data) setStreak(streakRes.data);
+    } catch (err) {
+      console.error('Network error in useProfile:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   }, [userId]);
 
   useEffect(() => {
@@ -49,5 +59,5 @@ export function useProfile(userId) {
     return data.publicUrl;
   };
 
-  return { profile, streak, loading, updateProfile, uploadAvatar, refresh: fetchData };
+  return { profile, streak, loading, error, updateProfile, uploadAvatar, refresh: fetchData };
 }

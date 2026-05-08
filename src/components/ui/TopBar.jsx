@@ -13,7 +13,7 @@ export default function TopBar({
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-50 bg-surface-card border-b border-border h-[56px] flex items-center px-4 gap-2 shadow-sm">
+    <header className="sticky top-0 z-50 bg-surface-card border-b border-border h-[56px] flex items-center justify-between px-4 gap-2 shadow-sm">
       {/* Left Section: Logo + FKIP always shown; back arrow overlays when showBack */}
       <div className="flex items-center shrink-0">
         {showBack ? (
@@ -32,17 +32,12 @@ export default function TopBar({
         )}
       </div>
 
-      {/* Middle Section: Halo nickname (main pages) or title (sub pages) */}
-      <div className="absolute left-1/2 -translate-x-1/2 flex flex-col justify-center items-center pointer-events-none">
-        {userName ? (
-          <div className="flex flex-col items-center leading-none">
-            <span className="text-[9px] uppercase tracking-widest font-bold text-ink-muted">Halo,</span>
-            <span className="font-serif font-black text-sm text-ink truncate mt-0.5 max-w-[150px] text-center">{userName}</span>
-          </div>
-        ) : title ? (
+      {/* Middle Section: Title (sub pages) */}
+      {title && (
+        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col justify-center items-center pointer-events-none">
           <h1 className="font-serif font-bold text-sm text-ink truncate max-w-[150px] text-center">{title}</h1>
-        ) : null}
-      </div>
+        </div>
+      )}
 
       {/* Right Section: XP, Logout, or Custom rightElement */}
       <div className="flex items-center gap-1.5 shrink-0">

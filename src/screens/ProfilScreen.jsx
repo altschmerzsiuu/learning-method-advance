@@ -10,7 +10,7 @@ import { Edit2 } from 'lucide-react';
 export default function ProfilScreen() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { profile, streak, loading: profileLoading } = useProfile(user?.id);
+  const { profile, streak, loading: profileLoading, error: profileError, refresh } = useProfile(user?.id);
   const { getCompletedCount } = useProgress();
   
   const [badges, setBadges] = useState([]);
@@ -34,7 +34,17 @@ export default function ProfilScreen() {
     navigate('/login', { replace: true });
   };
 
-  if (profileLoading) return <div className="p-6 text-center">Memuat profil...</div>;
+  if (profileLoading) return <div className="flex items-center justify-center min-h-[100dvh] bg-surface-bg"><div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" /></div>;
+  if (profileError) return (
+    <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-surface-bg p-6 text-center gap-4">
+      <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      </div>
+      <h2 className="font-serif font-black text-xl text-ink">Yah, Koneksi Terputus!</h2>
+      <p className="font-sans text-sm text-ink-muted">Gagal memuat data profil karena masalah jaringan. Pastikan internetmu stabil lalu coba lagi ya.</p>
+      <button onClick={() => refresh()} className="mt-2 px-6 py-3 bg-primary-300 text-white rounded-full font-bold shadow-sm">Coba Lagi</button>
+    </div>
+  );
 
   const totalXP = streak?.total_xp || 0;
   const level = Math.floor(totalXP / 500) + 1;

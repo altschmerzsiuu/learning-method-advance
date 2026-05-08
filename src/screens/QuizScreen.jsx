@@ -10,8 +10,8 @@ export default function QuizScreen() {
   const navigate    = useNavigate();
   const {
     soalList, currentSoal, currentIdx, total, isLast,
-    loading, direction, selectedAnswer, isAnswered,
-    score, selectAnswer, nextSoal, getScorePercent,
+    loading, error, direction, selectedAnswer, isAnswered,
+    score, selectAnswer, nextSoal, getScorePercent, retry
   } = useQuiz(topikId);
 
   if (loading) {
@@ -20,6 +20,22 @@ export default function QuizScreen() {
         <div className="flex flex-col items-center justify-center min-h-dvh p-4 gap-4">
           <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
           <p className="font-sans text-[14px] text-ink-muted">Memuat soal...</p>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageWrapper>
+        <TopBar showBack />
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-56px)] p-6 text-center gap-4">
+          <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <h2 className="font-serif font-black text-xl text-ink">Koneksi Bermasalah</h2>
+          <p className="font-sans text-sm text-ink-muted">Gagal mengambil soal dari server. Pastikan koneksi internetmu stabil.</p>
+          <Button onClick={() => retry()} className="mt-2">Coba Lagi</Button>
         </div>
       </PageWrapper>
     );
