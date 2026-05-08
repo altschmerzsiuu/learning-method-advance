@@ -68,6 +68,7 @@ export default function MateriListScreen() {
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
+                    {(() => {
                       const TopikIcon = TOPIK_ICONS[topik.id];
                       return TopikIcon ? (
                         <div className={`w-6 h-6 flex items-center justify-center rounded-md ${isDone ? 'text-success bg-success/10' : isUnlocked ? 'text-primary-500 bg-primary-50' : 'text-ink-faint bg-surface-muted'}`}>
