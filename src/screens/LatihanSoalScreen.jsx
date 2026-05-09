@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { getSoalLatihan, simpanHasilLatihan } from '../hooks/useLatihan';
-import { PageWrapper, TopBar, ProgressBar, Toast } from '../components/ui';
+import { PageWrapper, TopBar, ProgressBar, Button } from '../components/ui';
 import { toast } from '../lib/toast';
 
 export default function LatihanSoalScreen() {
@@ -11,9 +12,10 @@ export default function LatihanSoalScreen() {
   
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState([]); // Array of option objects
+  const [answers, setAnswers] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     async function loadSoal() {
@@ -29,16 +31,19 @@ export default function LatihanSoalScreen() {
   }, []);
 
   const handleAnswer = async (opt) => {
+    if (isTransitioning) return;
+    
     const newAnswers = [...answers];
     newAnswers[currentIdx] = opt;
     setAnswers(newAnswers);
     
-    // Auto next after 1.2s delay for feedback
+    // Auto next after feedback delay
+    setIsTransitioning(true);
     setTimeout(async () => {
       if (currentIdx < questions.length - 1) {
         setCurrentIdx(prev => prev + 1);
+        setIsTransitioning(false);
       } else {
-        // Finish
         setSaving(true);
         if (user) {
           try {
@@ -51,6 +56,7 @@ export default function LatihanSoalScreen() {
             console.error("Gagal menyimpan hasil:", err);
             toast.error('Gagal menyimpan hasil: ' + err.message);
             setSaving(false);
+            setIsTransitioning(false);
           }
         }
       }
@@ -59,7 +65,7 @@ export default function LatihanSoalScreen() {
 
   if (loading || saving) {
     return (
-      <div className="flex items-center justify-center min-h-[100dvh]">
+      <div className="flex items-center justify-center min-h-[100dvh] bg-surface">
         <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
         {saving && <p className="absolute mt-12 text-xs font-bold text-ink">Menyimpan Hasil...</p>}
       </div>
@@ -83,61 +89,81 @@ export default function LatihanSoalScreen() {
     <PageWrapper className="latihan-screen">
       <TopBar title={`Soal ${currentIdx + 1} / ${questions.length}`} showBack />
       
-      <div className="container py-4 px-4 flex flex-col min-h-[calc(100dvh-56px)]">
-        <div className="mb-6">
-          <ProgressBar value={progress} />
+      <div className="latihan-progress-wrapper">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[10px] font-black text-ink-muted uppercase tracking-wider">Progres Belajar</span>
+          <span className="text-[10px] font-black text-primary-300">{currentIdx + 1} / {questions.length}</span>
         </div>
-
-        <div className="flex-1 w-full max-w-md mx-auto">
-          <div className="soal-card p-5">
-            {/* Context (bacaan) jika ada */}
-            {soal.quiz_contexts?.context_text && (
-              <div className="context-box">
-                <div className="context-label">BACAAN</div>
-                <p className="font-serif text-sm leading-relaxed text-ink">{soal.quiz_contexts.context_text}</p>
-              </div>
-            )}
-
-            {/* Pertanyaan */}
-            <p className="font-sans font-bold text-ink mb-6">{soal.question_text}</p>
-
-            {/* Pilihan Jawaban */}
-            <div className="flex flex-col gap-3">
-              {soal.answer_options?.map((opt, i) => {
-                const isSelected = answeredOpt?.id === opt.id;
-                const showCorrect = !!answeredOpt && opt.is_correct;
-                const showWrong = isSelected && !opt.is_correct;
-                
-                let btnClass = "option-btn text-left p-3 flex items-center gap-3 transition-colors ";
-                if (showCorrect) btnClass += "correct";
-                else if (showWrong) btnClass += "wrong";
-                else if (answeredOpt) btnClass += "opacity-50"; // disable others
-                else btnClass += "hover:bg-surface-muted";
-
-                return (
-                  <button
-                    key={opt.id}
-                    className={btnClass}
-                    onClick={() => !answeredOpt && handleAnswer(opt)}
-                    disabled={!!answeredOpt}
-                  >
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0
-                      ${showCorrect ? 'bg-success-500 text-white' : 
-                        showWrong ? 'bg-rose-500 text-white' : 
-                        'bg-surface-muted text-ink-muted'}
-                    `}>
-                      {['A','B','C','D'][i]}
-                    </span>
-                    <span className={`font-sans text-sm ${showCorrect || showWrong ? 'font-bold' : ''}`}>
-                      {opt.option_text}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+          <motion.div 
+            className="h-full progfill-gradient"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
         </div>
       </div>
+
+      <div className="soal-wrapper">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`soal-${currentIdx}`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="soal-card">
+              {soal.quiz_contexts?.context_text && (
+                <div className="context-box">
+                  <div className="context-label">BACAAN</div>
+                  <p className="context-text">{soal.quiz_contexts.context_text}</p>
+                </div>
+              )}
+
+              <p className="question-text">{soal.question_text}</p>
+
+              <div className="options-list">
+                {soal.answer_options?.map((opt, i) => {
+                  const isSelected = answeredOpt?.id === opt.id;
+                  const showCorrect = !!answeredOpt && opt.is_correct;
+                  const showWrong = isSelected && !opt.is_correct;
+                  
+                  let btnClass = "option-btn ";
+                  if (showCorrect) btnClass += "correct";
+                  else if (showWrong) btnClass += "wrong";
+                  else if (answeredOpt) btnClass += "opacity-50";
+
+                  return (
+                    <button
+                      key={opt.id}
+                      className={btnClass}
+                      onClick={() => !answeredOpt && handleAnswer(opt)}
+                      disabled={!!answeredOpt || isTransitioning}
+                    >
+                      <span className="option-letter">
+                        {['A','B','C','D'][i]}
+                      </span>
+                      <span className="flex-1">{opt.option_text}</span>
+                      {showCorrect && <div className="option-icon">✓</div>}
+                      {showWrong && <div className="option-icon">✕</div>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {answeredOpt && currentIdx === questions.length - 1 && (
+        <div className="latihan-bottom-bar">
+          <Button fullWidth disabled={saving}>
+            {saving ? 'Menyimpan...' : 'Lihat Hasil Akhir'}
+          </Button>
+        </div>
+      )}
     </PageWrapper>
   );
 }

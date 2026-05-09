@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageWrapper, TopBar, ConfirmModal } from '../components/ui';
+import BadgeItem from '../components/profil/BadgeItem'; 
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useProgress } from '../hooks/useProgress';
@@ -13,18 +14,18 @@ export default function ProfilScreen() {
   const { profile, streak, loading: profileLoading, error: profileError, refresh } = useProfile(user?.id);
   const { getCompletedCount } = useProgress();
   
-  const [badges, setBadges] = useState([]);
-  const [userBadgeIds, setUserBadgeIds] = useState([]);
+  const [allBadges, setAllBadges] = useState([]);
+  const [userBadges, setUserBadges] = useState([]);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     async function loadBadges() {
       if (!user) return;
-      const { data: allBadges } = await supabase.from('badges').select('*').order('id');
-      const { data: uBadges } = await supabase.from('user_badges').select('badge_id').eq('user_id', user.id);
+      const { data: allB } = await supabase.from('badges').select('*').order('id');
+      const { data: uB } = await supabase.from('user_badges').select('badge_id, earned_at').eq('user_id', user.id);
       
-      setBadges(allBadges || []);
-      setUserBadgeIds((uBadges || []).map(b => b.badge_id));
+      setAllBadges(allB || []);
+      setUserBadges(uB || []);
     }
     loadBadges();
   }, [user]);
@@ -120,16 +121,19 @@ export default function ProfilScreen() {
 
         {/* BadgeSection */}
         <div>
-          <h3 className="font-serif font-bold text-lg mb-3">Pencapaian</h3>
+          <h3 className="font-serif font-bold text-lg mb-1">Pencapaian</h3>
+          <p className="text-[11px] text-ink-muted mb-4 italic">Tap badge untuk melihat cara mendapatkannya</p>
           <div className="grid grid-cols-3 gap-3">
-            {badges.map(b => {
-              const isEarned = userBadgeIds.includes(b.id);
+            {allBadges.map((badge, index) => {
+              const ub = userBadges.find(u => u.badge_id === badge.id);
               return (
-                <div key={b.id} className={`flex flex-col items-center text-center p-3 rounded-xl border ${isEarned ? 'bg-accent-light border-accent-border' : 'bg-surface-muted border-border grayscale opacity-60'}`}>
-                  <span className="text-3xl mb-2">{b.icon}</span>
-                  <p className="font-sans text-[10px] font-bold text-ink leading-tight">{b.nama}</p>
-                  {!isEarned && <span className="text-[10px] text-ink-muted mt-1">🔒</span>}
-                </div>
+                <BadgeItem 
+                  key={badge.id}
+                  badge={badge}
+                  isEarned={!!ub}
+                  earnedAt={ub?.earned_at}
+                  index={index}
+                />
               );
             })}
           </div>

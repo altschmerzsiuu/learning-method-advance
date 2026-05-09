@@ -35,7 +35,7 @@ export default function MateriListScreen() {
         
         {/* Progress Header */}
         <div className="bg-gradient-to-br from-[#F0FAFF] to-[#B9ECFF] border border-[#B9ECFF] rounded-2xl p-5 shadow-sm">
-          <h2 className="font-serif font-black text-lg text-ink mb-1">Perjalanan Belajarmu</h2>
+          <h2 className="font-serif font-black text-lg text-ink mb-4">Perjalanan Belajarmu</h2>
           <p className="font-sans text-[11px] text-ink-muted leading-relaxed mb-4">
             Selesaikan semua topik untuk jadi ahli teks eksposisi!
           </p>
@@ -46,7 +46,9 @@ export default function MateriListScreen() {
         </div>
 
         {/* Topik List */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-6">
+          <h2 className="font-serif font-bold text-lg mb-6 px-1">Daftar Materi</h2>
+          <div className="flex flex-col gap-3">
           {materiData.map((topik, index) => {
             const isDone = progress[topik.id]?.status === 'done';
             const isUnlocked = progress[topik.id]?.status === 'active' || progress[topik.id]?.status === 'done';
@@ -102,6 +104,7 @@ export default function MateriListScreen() {
               </button>
             );
           })}
+          </div>
         </div>
 
       </div>

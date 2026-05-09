@@ -54,7 +54,7 @@ export default function CarouselBanner() {
   const IconComponent = banner.Icon;
 
   return (
-    <div className="relative w-full h-[140px] px-4 overflow-hidden mb-2">
+    <div className="relative w-full h-[140px] px-4 overflow-hidden mb-8">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}

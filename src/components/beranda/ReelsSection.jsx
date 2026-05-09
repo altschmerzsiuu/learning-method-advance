@@ -13,8 +13,8 @@ export default function ReelsSection() {
 
   return (
     <>
-      <div className="mb-4">
-        <h2 className="font-serif font-black text-sm text-ink mb-3 px-4">Reels Belajar</h2>
+      <div className="mb-8 pt-4">
+        <h2 className="font-serif font-black text-sm text-ink mb-4 px-4" style={{ padding: '8px' }}>Reels Belajar</h2>
         <div className="flex gap-3 px-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
           {reels.map(reel => (
             <div 

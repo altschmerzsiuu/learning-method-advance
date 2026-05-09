@@ -8,6 +8,20 @@ import { useProgress } from '../hooks/useProgress';
 import materiData from '../data/materi.json';
 import { ChevronRight } from 'lucide-react';
 
+const pageVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+  },
+  exit: {
+    opacity: 0,
+    y: -8,
+    transition: { duration: 0.2 }
+  }
+};
+
 export default function MateriDetailScreen() {
   const { topikId }           = useParams();
   const navigate              = useNavigate();
@@ -84,7 +98,14 @@ export default function MateriDetailScreen() {
         rightContent={<Badge variant={status === 'done' ? 'done' : 'active'}>{status === 'done' ? 'Selesai' : 'Aktif'}</Badge>}
       />
 
-      <div ref={contentRef} className="px-4 pb-36 pt-5">
+      <motion.div
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        ref={contentRef} 
+        className="px-4 pb-36 pt-5"
+      >
         {/* Hero header */}
         <div className="mb-6">
           <p className="font-sans text-[11px] font-bold text-ink-muted uppercase tracking-[0.08em] mb-1">
@@ -98,7 +119,7 @@ export default function MateriDetailScreen() {
 
         {/* Content */}
         <KontenRenderer konten={topik.konten} />
-      </div>
+      </motion.div>
 
       {/* Sticky CTA bottom */}
       <AnimatePresence>

@@ -74,7 +74,7 @@ export default function LatihanScreen() {
             <div className="absolute -right-4 -top-4 opacity-10">
               <Target size={100} />
             </div>
-            <h2 className="font-serif font-black text-lg text-primary-600 mb-1 relative z-10">
+            <h2 className="font-serif font-black text-lg text-primary-600 mb-3 relative z-10">
               20 Soal Pilihan Ganda
             </h2>
             <p className="font-sans text-xs text-ink-muted mb-4 relative z-10 max-w-[80%]">
@@ -89,8 +89,8 @@ export default function LatihanScreen() {
           </Card>
         )}
 
-        <div className="flex flex-col gap-3">
-          <h3 className="font-serif font-bold text-sm text-ink flex items-center gap-2">
+        <div className="flex flex-col gap-6 mt-4">
+          <h3 className="font-serif font-bold text-lg text-ink flex items-center gap-2 mb-6">
             Riwayat Latihan
           </h3>
           

@@ -43,7 +43,7 @@ export default function FeedCard({ item }) {
     const txtClass = textColors[item.warna] || textColors.sky;
 
     return (
-      <div className={`${bgClass} border rounded-xl p-4 shadow-sm mb-3`}>
+      <div className={`${bgClass} border rounded-xl p-4 shadow-sm mb-3`} style={{ padding: '14px 16px' }}>
         <div className="flex items-center gap-1.5 mb-2">
           <Lightbulb size={14} className={txtClass} />
           <span className={`text-[10px] font-black uppercase tracking-wider ${txtClass}`}>
@@ -51,7 +51,7 @@ export default function FeedCard({ item }) {
           </span>
         </div>
         <h3 className="font-serif font-bold text-ink text-sm mb-1">{item.judul}</h3>
-        <p className="font-sans text-xs text-ink-muted leading-relaxed whitespace-pre-line">{item.isi}</p>
+        <p className="font-sans text-[13px] text-ink-muted leading-[1.6] whitespace-pre-line">{item.isi}</p>
       </div>
     );
   }
