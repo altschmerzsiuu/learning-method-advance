@@ -16,8 +16,9 @@ export default function StoriesBar({ progress = {} }) {
   return (
     <div className="flex gap-4 px-4 pt-3 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
       {topiks.map(t => {
-        const isDone = progress[t.id]?.completed;
-        const isActive = progress[t.id]?.unlocked || t.id === 'pengenalan';
+        const status = progress[t.id]?.status || (t.id === 'pengenalan' ? 'active' : 'locked');
+        const isDone = status === 'done';
+        const isActive = status === 'active' || isDone;
         const IconComponent = t.Icon;
 
         return (

@@ -49,15 +49,17 @@ export default function SoalCard({
 
         {/* Options */}
         <div className="flex flex-col gap-2.5">
-          {(soal.shuffledOptions || []).map((optionText, idx) => {
+          {(soal.shuffledOptions || []).map((opt, idx) => {
             const letter = String.fromCharCode(65 + idx); // A, B, C, D
+            const optionText = opt.option_text;
+            
             return (
               <PilihanButton
-                key={letter}
+                key={opt.id || letter}
                 pilihan={`${letter}. ${optionText}`}
                 isSelected={selectedAnswer === letter}
                 isAnswered={isAnswered}
-                isCorrect={optionText === soal.correctText}
+                isCorrect={opt.is_correct}
                 onClick={() => onSelect(letter, optionText)}
               />
             );

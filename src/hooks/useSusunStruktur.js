@@ -65,10 +65,6 @@ export function useSusunStruktur() {
 
     if (!sourceContainer) return;
 
-    // Target container is either a droppable area (tesis, argumentasi, penegasan, pool)
-    // or an item inside a droppable area. For simplicity, overId should be the container id 
-    // or we map item id back to container.
-
     let targetContainer = overId;
     if (['tesis', 'argumentasi', 'penegasan', 'pool'].includes(overId)) {
       targetContainer = overId;
@@ -80,6 +76,9 @@ export function useSusunStruktur() {
         }
       }
     }
+
+    // FIX: Jika asal dan tujuan sama, jangan lakukan apa-apa (mencegah duplikasi)
+    if (sourceContainer === targetContainer) return;
 
     // Hanya argumentasi dan pool yang boleh berisi lebih dari 1
     if (targetContainer === 'tesis' && items.tesis.length >= 1 && sourceContainer !== 'tesis') {

@@ -11,37 +11,33 @@ export async function getSoalLatihan() {
         topik_id,
         tingkat,
         pool,
-        options,
-        correct_answer,
         quiz_contexts (
-          content
+          context_text
+        ),
+        answer_options (
+          id,
+          option_text,
+          is_correct
         )
       `)
-      .order('created_at', { ascending: false });
+      .in('pool', ['latihan', 'both']);
 
     if (error) throw error;
     if (!data || data.length === 0) {
       throw new Error('Tidak ada soal tersedia');
     }
 
-    // Filter pool: latihan or both
-    const filtered = data.filter(q =>
-      !q.pool || q.pool === 'latihan' || q.pool === 'both'
-    );
-    const pool = filtered.length >= 20 ? filtered : data;
-
     // Shuffle dan ambil 20
-    const selected = shuffleArray(pool).slice(0, 20);
+    const shuffled = shuffleArray(data).slice(0, 20);
 
-    // Normalize: transform options string-array into answer_options-like objects
-    return selected.map(q => {
-      const opts = Array.isArray(q.options) ? q.options : [];
-      const answer_options = shuffleArray(opts).map((text, i) => ({
-        id: `${q.id}_${i}`,
-        option_text: text,
-        is_correct: text === q.correct_answer,
-      }));
-      return { ...q, answer_options };
+    // Map data agar sesuai dengan ekspektasi UI
+    return shuffled.map(q => {
+      // Shuffle options dari tabel answer_options
+      const answer_options = shuffleArray(q.answer_options || []);
+      return { 
+        ...q, 
+        answer_options 
+      };
     });
   } catch (err) {
     console.error('getSoalLatihan error:', err);

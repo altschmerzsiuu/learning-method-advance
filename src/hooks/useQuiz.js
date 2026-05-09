@@ -2,13 +2,14 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-function shuffleArray(array) {
-  const newArr = [...array];
-  for (let i = newArr.length - 1; i > 0; i--) {
+function shuffleArray(arr) {
+  if (!arr || !Array.isArray(arr)) return [];
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return newArr;
+  return a;
 }
 
 export function useQuiz(topikId) {
@@ -26,66 +27,52 @@ export function useQuiz(topikId) {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch from Supabase
+      // 1. Fetch from Supabase with new relational structure
       const { data, error } = await supabase
         .from('quiz_questions')
-        .select('*, quiz_contexts(*)');
+        .select(`
+          id,
+          question_text,
+          topik_id,
+          tingkat,
+          pool,
+          quiz_contexts (
+            id,
+            context_text
+          ),
+          answer_options (
+            id,
+            option_text,
+            is_correct
+          )
+        `)
+        .eq('topik_id', topikId)
+        .eq('pool', 'materi');
 
       if (error) throw error;
-
-      // 2. Filter by topikId
-      const filtered = data.filter(q => q.topik_id === topikId);
-
-      // 3. Group questions by context
-      const grouped = [];
-      const contextMap = new Map();
-
-      filtered.forEach(q => {
-        if (q.context_id) {
-          if (!contextMap.has(q.context_id)) {
-            contextMap.set(q.context_id, []);
-            grouped.push({ 
-              type: 'context', 
-              context: q.quiz_contexts?.content || '', 
-              questions: contextMap.get(q.context_id) 
-            });
-          }
-          contextMap.get(q.context_id).push(q);
-        } else {
-          grouped.push({ type: 'standalone', question: q });
-        }
-      });
-
-      // 4. Shuffle the groups
-      const shuffledGroups = shuffleArray(grouped);
-
-      // 5. Select groups until we have ~20 questions
-      const selectedQuestions = [];
-      let count = 0;
-      const MAX_SOAL = 20;
-
-      for (const item of shuffledGroups) {
-        if (count >= MAX_SOAL) break;
-        if (item.type === 'context') {
-          item.questions.forEach(q => {
-            selectedQuestions.push({ ...q, context: item.context });
-            count++;
-          });
-        } else {
-          selectedQuestions.push(item.question);
-          count++;
-        }
+      if (!data || data.length === 0) {
+        setSessionSoal([]);
+        return;
       }
 
-      // 6. Process selected questions (shuffle options)
-      const processed = selectedQuestions.map(q => {
-        // q.options is already a clean array from my seed script
-        const shuffledOptions = shuffleArray(q.options);
+      // 2. Shuffle and take 5 for pre-quiz per materi
+      const shuffled = shuffleArray(data).slice(0, 5);
+
+      // 3. Process data for UI
+      const processed = shuffled.map(q => {
+        const contextObj = q.quiz_contexts;
+        const contextText = contextObj ? contextObj.context_text : null;
+        
+        // Shuffle options from answer_options table
+        const shuffledOpts = shuffleArray(q.answer_options || []);
+        
         return {
           ...q,
-          pertanyaan: q.question_text, // mapping to original field name if used in UI
-          shuffledOptions,
-          correctText: q.correct_answer
+          pertanyaan: q.question_text,
+          context: contextText,
+          shuffledOptions: shuffledOpts,
+          // Store correct option text for checking logic
+          correctText: shuffledOpts.find(o => o.is_correct)?.option_text
         };
       });
 

@@ -6,6 +6,7 @@ import confetti from 'canvas-confetti';
 import { Zap, RotateCcw, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
 import { PageWrapper, Button, TopBar } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
+import { useProgress } from '../hooks/useProgress';
 import { supabase } from '../lib/supabase';
 import { checkAndAwardBadges, triggerBadgeToast } from '../lib/badgeChecker';
 
@@ -14,6 +15,7 @@ export default function HasilQuizScreen() {
   const navigate    = useNavigate();
   const location    = useLocation();
   const { user } = useAuth();
+  const { completeTopik } = useProgress();
 
   const { score = 0, total = 5, scorePercent = 0 } = location.state ?? {};
   const xpEarned = Math.round(scorePercent * 0.8); // max 80 XP for perfect
@@ -23,7 +25,10 @@ export default function HasilQuizScreen() {
     if (!user) return;
 
     const processResults = async () => {
-      // 1. Update Profile XP (Now in user_streak table)
+      // 1. Mark as done and unlock next topic
+      await completeTopik(topikId);
+
+      // 2. Update Profile XP (Now in user_streak table)
       const { data: streakData } = await supabase.from('user_streak').select('total_xp').eq('user_id', user.id).single();
       if (streakData) {
         await supabase.from('user_streak').update({ total_xp: streakData.total_xp + xpEarned }).eq('user_id', user.id);

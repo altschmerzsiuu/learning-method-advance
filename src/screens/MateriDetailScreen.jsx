@@ -85,7 +85,8 @@ export default function MateriDetailScreen() {
   }
 
   const handleLanjutQuiz = () => {
-    completeTopik(topikId, topik.xp_reward);
+    // FIX: Jangan panggil completeTopik di sini, 
+    // panggil di halaman hasil quiz setelah selesai ngerjain!
     navigate(`/materi/${topikId}/quiz`);
   };
 
