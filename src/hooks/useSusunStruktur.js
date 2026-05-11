@@ -77,37 +77,35 @@ export function useSusunStruktur() {
       }
     }
 
-    // FIX: Jika asal dan tujuan sama, jangan lakukan apa-apa (mencegah duplikasi)
-    if (sourceContainer === targetContainer) return;
-
-    // Hanya argumentasi dan pool yang boleh berisi lebih dari 1
-    if (targetContainer === 'tesis' && items.tesis.length >= 1 && sourceContainer !== 'tesis') {
-      // Pindahkan item yg ada di tesis balik ke pool
-      const existing = items.tesis[0];
-      setItems(prev => ({
-        ...prev,
-        tesis: [activeItem],
-        [sourceContainer]: prev[sourceContainer].filter(i => i.id !== activeId),
-        pool: [...prev.pool, existing]
-      }));
-      return;
-    }
-
-    if (targetContainer === 'penegasan' && items.penegasan.length >= 1 && sourceContainer !== 'penegasan') {
-      const existing = items.penegasan[0];
-      setItems(prev => ({
-        ...prev,
-        penegasan: [activeItem],
-        [sourceContainer]: prev[sourceContainer].filter(i => i.id !== activeId),
-        pool: [...prev.pool, existing]
-      }));
+    // FITUR REARRANGE: Jika asal dan tujuan sama, tapi dilempar di atas item lain
+    if (sourceContainer === targetContainer) {
+      if (activeId !== overId && overId !== targetContainer) {
+        const oldIndex = items[sourceContainer].findIndex(i => i.id === activeId);
+        const newIndex = items[sourceContainer].findIndex(i => i.id === overId);
+        
+        if (oldIndex !== -1 && newIndex !== -1) {
+          setItems(prev => {
+            const newArray = [...prev[sourceContainer]];
+            const [removed] = newArray.splice(oldIndex, 1);
+            newArray.splice(newIndex, 0, removed);
+            return {
+              ...prev,
+              [sourceContainer]: newArray
+            };
+          });
+        }
+      }
       return;
     }
 
     // Move normally
     setItems(prev => {
+      // 1. Amhapus item dari container asal
       const newSource = prev[sourceContainer].filter(i => i.id !== activeId);
+      
+      // 2. Tambahkan item ke container tujuan
       const newTarget = [...prev[targetContainer], activeItem];
+      
       return {
         ...prev,
         [sourceContainer]: newSource,

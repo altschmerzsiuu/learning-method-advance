@@ -87,7 +87,7 @@ export default function LatihanSoalScreen() {
 
   return (
     <PageWrapper className="latihan-screen">
-      <TopBar title={`Soal ${currentIdx + 1} / ${questions.length}`} showBack />
+      <TopBar title={`Soal ${currentIdx + 1} / ${questions.length}`} />
       
       <div className="latihan-progress-wrapper">
         <div className="flex justify-between items-center mb-2">
@@ -118,7 +118,7 @@ export default function LatihanSoalScreen() {
               {soal.quiz_contexts?.context_text && (
                 <div className="context-box">
                   <div className="context-label">BACAAN</div>
-                  <p className="context-text">{soal.quiz_contexts.context_text}</p>
+                  <p className="context-text whitespace-pre-wrap">{soal.quiz_contexts.context_text}</p>
                 </div>
               )}
 

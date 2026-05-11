@@ -33,7 +33,7 @@ export default function BerandaScreen() {
 
         <div className="px-4 mt-4 pb-4">
           <h2 className="font-serif font-black text-sm text-ink mb-4" style={{ padding: '8px' }}>Feed Belajar</h2>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4">
             {feedContent.map(item => (
               <FeedCard key={item.id} item={item} />
             ))}

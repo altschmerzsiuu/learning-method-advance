@@ -1,5 +1,6 @@
 // src/components/ui/PageWrapper.jsx
 import { motion } from 'framer-motion';
+import BottomNav from './BottomNav';
 
 const pageVariants = {
   initial: { opacity: 0, y: 16 },
@@ -15,12 +16,6 @@ const pageVariants = {
   },
 };
 
-/**
- * PageWrapper — Wraps every screen with page transition animation.
- * Usage: wrap the return JSX of each screen with <PageWrapper>
- */
-import BottomNav from './BottomNav';
-
 export default function PageWrapper({ children, className = '', bottomNav = false }) {
   return (
     <motion.div
@@ -28,12 +23,16 @@ export default function PageWrapper({ children, className = '', bottomNav = fals
       initial="initial"
       animate="animate"
       exit="exit"
-      className={`min-h-dvh flex flex-col ${className}`}
+      className="min-h-dvh flex flex-col bg-[#F8FAFC]" // Background luar abu-abu tipis biar estetik
     >
-      <main className="flex-1">
-        {children}
-      </main>
-      {bottomNav && <BottomNav />}
+      {/* Konten dikunci ukuran HP (430px) dan ditaruh di tengah */}
+      <div className="w-full max-w-[430px] mx-auto min-h-dvh bg-white flex flex-col shadow-sm relative">
+        <main className={`flex-1 flex flex-col ${className}`}>
+          {children}
+        </main>
+        
+        {bottomNav && <BottomNav />}
+      </div>
     </motion.div>
   );
 }

@@ -1,6 +1,8 @@
+// src/components/game/susun/ParagrafDrag.jsx
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function ParagrafDrag({ id, teks, status }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -25,7 +27,9 @@ export default function ParagrafDrag({ id, teks, status }) {
   }
 
   return (
-    <div
+    <motion.div
+      layout // Animasi geser
+      transition={{ duration: 0.2, ease: "easeInOut" }} // Lebih cepet dan nggak mantul
       ref={setNodeRef}
       style={style}
       className={`relative p-3 rounded-xl border shadow-sm flex items-start gap-2 select-none mb-2
@@ -42,6 +46,6 @@ export default function ParagrafDrag({ id, teks, status }) {
         {status === 'wrong' ? <span className="text-[10px] font-bold">X</span> : null}
       </div>
       <p className="font-sans text-xs leading-relaxed flex-1">{teks}</p>
-    </div>
+    </motion.div>
   );
 }

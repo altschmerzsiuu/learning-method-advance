@@ -69,7 +69,7 @@ export default function ProfilScreen() {
       />
 
       {/* pb-32 biar konten paling bawah nggak ketutup menu bawah */}
-      <div className="container py-6 pb-32 flex flex-col gap-6 px-4">
+      <div className="w-full py-6 pb-32 flex flex-col gap-6 px-4">
         
         {/* Avatar Section */}
         <div className="flex flex-col items-center">

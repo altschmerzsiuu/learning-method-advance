@@ -31,7 +31,7 @@ export default function MateriListScreen() {
     <PageWrapper bottomNav>
       <TopBar xp={streak?.total_xp || 0} onLogout={signOut} userName={profile?.nama || user?.email?.split('@')[0] || 'Pelajar'} />
 
-      <div className="container py-6 pb-24 px-4 flex flex-col gap-6">
+      <div className="w-full py-6 pb-24 px-4 flex flex-col gap-6">
         
         {/* Progress Header */}
         <div className="bg-gradient-to-br from-[#F0FAFF] to-[#B9ECFF] border border-[#B9ECFF] rounded-2xl p-5 shadow-sm">
