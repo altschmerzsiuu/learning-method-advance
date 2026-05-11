@@ -20,8 +20,21 @@ export default function LatihanSoalScreen() {
   useEffect(() => {
     async function loadSoal() {
       try {
-        const data = await getSoalLatihan();
-        setQuestions(data);
+        // Cek apakah ada data kuis yang tersimpan di sesi ini
+        const savedQuestions = sessionStorage.getItem('latihan_questions');
+        const savedAnswers = sessionStorage.getItem('latihan_answers');
+        const savedIdx = sessionStorage.getItem('latihan_current_idx');
+
+        if (savedQuestions) {
+          setQuestions(JSON.parse(savedQuestions));
+          if (savedAnswers) setAnswers(JSON.parse(savedAnswers));
+          if (savedIdx) setCurrentIdx(Number(savedIdx));
+        } else {
+          // Jika tidak ada, ambil dari database
+          const data = await getSoalLatihan();
+          setQuestions(data);
+          sessionStorage.setItem('latihan_questions', JSON.stringify(data));
+        }
       } catch (err) {
         console.error(err);
       }
@@ -37,14 +50,26 @@ export default function LatihanSoalScreen() {
     newAnswers[currentIdx] = opt;
     setAnswers(newAnswers);
     
+    // Simpan progres jawaban ke session storage
+    sessionStorage.setItem('latihan_answers', JSON.stringify(newAnswers));
+    
     // Auto next after feedback delay
     setIsTransitioning(true);
     setTimeout(async () => {
       if (currentIdx < questions.length - 1) {
-        setCurrentIdx(prev => prev + 1);
+        const nextIdx = currentIdx + 1;
+        setCurrentIdx(nextIdx);
+        // Simpan nomor soal terakhir ke session storage
+        sessionStorage.setItem('latihan_current_idx', nextIdx.toString());
         setIsTransitioning(false);
       } else {
         setSaving(true);
+        
+        // Hapus data sesi karena kuis sudah selesai
+        sessionStorage.removeItem('latihan_questions');
+        sessionStorage.removeItem('latihan_answers');
+        sessionStorage.removeItem('latihan_current_idx');
+
         if (user) {
           try {
             const hasil = await simpanHasilLatihan(user.id, newAnswers, questions);
