@@ -16,7 +16,7 @@ export default function QuizScreen() {
 
   if (loading) {
     return (
-      <PageWrapper>
+      <PageWrapper withNav>
         <TopBar showBack title="Memuat Quiz..." />
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-56px)] p-4 gap-4">
           <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
@@ -28,7 +28,7 @@ export default function QuizScreen() {
 
   if (error) {
     return (
-      <PageWrapper>
+      <PageWrapper withNav>
         <TopBar showBack />
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-56px)] p-6 text-center gap-4">
           <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-2">
@@ -44,7 +44,7 @@ export default function QuizScreen() {
 
   if (soalList.length === 0) {
     return (
-      <PageWrapper>
+      <PageWrapper withNav>
         <TopBar showBack />
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-56px)] p-4 gap-4">
           <p className="font-serif text-[18px] font-bold text-ink text-center">Soal tidak tersedia untuk topik ini.</p>
@@ -55,7 +55,7 @@ export default function QuizScreen() {
   }
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       {/* TopBar — no BottomNav on quiz */}
       <TopBar 
         title={`Quiz: ${currentIdx + 1}/${total}`}

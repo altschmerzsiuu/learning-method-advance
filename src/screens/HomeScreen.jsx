@@ -33,7 +33,7 @@ export default function HomeScreen() {
   const totalCount     = sortedMateri.length;
 
   return (
-    <PageWrapper bottomNav>
+    <PageWrapper withNav>
       <TopBar 
         logo 
         xp={totalXP} 

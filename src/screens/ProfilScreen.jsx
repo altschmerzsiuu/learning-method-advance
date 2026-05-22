@@ -52,7 +52,7 @@ export default function ProfilScreen() {
   const streakCount = streak?.streak_count || 0;
 
   return (
-    <PageWrapper bottomNav>
+    <PageWrapper withNav>
       <TopBar 
         title="Profil" 
         xp={totalXP} 

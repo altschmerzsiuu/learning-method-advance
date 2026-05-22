@@ -26,7 +26,7 @@ export default function ProgressScreen() {
   const completedCount = getCompletedCount();
 
   return (
-    <PageWrapper bottomNav>
+    <PageWrapper withNav>
       <TopBar 
         title="Progress" 
         xp={totalXP} 

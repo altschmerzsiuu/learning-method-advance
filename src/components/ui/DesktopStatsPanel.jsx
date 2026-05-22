@@ -7,10 +7,9 @@ import { Zap } from 'lucide-react';
 export default function DesktopStatsPanel() {
   const { user } = useAuth();
   const { profile } = useProfile(user?.id);
-  const { streak } = useStreak(user?.id);
+  const { streak, totalXP } = useStreak();
 
-  const totalXP = streak?.total_xp || 0;
-  const streakDays = streak?.streak_count || 0;
+  const streakDays = streak || 0;
 
   return (
     <div className="h-full bg-surface-card py-6 px-6 flex flex-col gap-6">

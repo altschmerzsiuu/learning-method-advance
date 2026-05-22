@@ -82,17 +82,11 @@ body {
   min-height: 100dvh;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
 }
 
 #root {
   width: 100%;
-  max-width: 430px;
   min-height: 100dvh;
-  position: relative;
-  background-color: var(--color-surface);
-  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -104,6 +98,125 @@ h1, h2, h3, h4, h5, h6 {
 
 p { margin: 0; }
 a { text-decoration: none; color: inherit; }
+
+/* ============================================
+   APP SHELL — Responsive Layout System
+   ============================================ */
+
+/* Shell = flex row yang berisi sidebar + konten + panel */
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+  background-color: #F8FAFC;
+}
+
+/* Centered variant: auth, game, quiz — max 430px di tengah */
+.app-shell--centered {
+  justify-content: center;
+}
+
+/* Nav variant: halaman utama & sub-halaman — punya sidebar */
+.app-shell--nav {
+  justify-content: flex-start;
+}
+
+/* ── SIDEBAR ────────────────────────────────── */
+.app-sidebar {
+  /* Hidden di mobile, muncul di tablet+ */
+  display: none;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 200px;
+  border-right: 1px solid var(--color-border);
+  background: #FFFFFF;
+
+  /* STICKY: sidebar tidak ikut scroll */
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  align-self: flex-start; /* mencegah stretch agar sticky bekerja sempurna */
+  overflow-y: auto;
+}
+
+/* ── KONTEN UTAMA ────────────────────────────── */
+.app-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 100dvh;
+  background: #FFFFFF;
+}
+
+/* Centered: auth/quiz pages — tetap narrow */
+.app-content--centered {
+  max-width: 430px;
+  width: 100%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* Nav: halaman dengan sidebar — narrow di mobile, melebar di tablet+ */
+.app-content--nav {
+  max-width: 430px; /* mobile: tetap narrow + centered via parent */
+  margin: 0 auto;
+}
+
+/* ── PANEL KANAN ─────────────────────────────── */
+.app-stats {
+  display: none;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 260px;
+  border-left: 1px solid var(--color-border);
+  background: #FFFFFF;
+
+  /* STICKY: panel kanan juga tidak ikut scroll */
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  align-self: flex-start; /* mencegah stretch agar sticky bekerja sempurna */
+  overflow-y: auto;
+}
+
+/* ── TABLET (768px+): sidebar muncul ────────── */
+@media (min-width: 768px) {
+  .app-sidebar {
+    display: flex;
+  }
+
+  .app-content--nav {
+    max-width: none; /* Full width fluid on tablet */
+    margin: 0;
+    padding-top: 24px; /* Give beautiful breathing space at the top since TopBar is hidden! */
+  }
+}
+
+/* ── DESKTOP (1024px+): panel stats muncul ──── */
+@media (min-width: 1024px) {
+  .app-sidebar {
+    width: 220px;
+  }
+
+  .app-stats {
+    display: flex;
+  }
+
+  .app-content--nav {
+    max-width: none; /* Full width fluid on desktop */
+  }
+}
+
+/* ── RESPONSIVE TYPOGRAPHY ───────────────────── */
+@media (min-width: 768px) {
+  .question-text  { font-size: 15px; }
+  .option-btn     { font-size: 14px; padding: 16px; }
+  .context-text   { font-size: 13px; }
+}
+
+@media (min-width: 1024px) {
+  html { font-size: 16px; }
+}
+
 
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
@@ -383,3 +496,683 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 10px;
   padding: 0;
 }
+
+
+
+
+/* ============================================
+   ONBOARDING TOUR
+   ============================================ */
+
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 42, 0.72);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.tour-overlay--transparent {
+  background: transparent !important;
+}
+
+.tour-spotlight {
+  position: fixed;
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(13, 27, 42, 0.72);
+  z-index: 10000;
+  pointer-events: none;
+  outline: 2.5px solid rgba(112, 214, 255, 0.8);
+  outline-offset: 2px;
+  transition: all 0.3s ease;
+}
+
+.tour-tooltip {
+  position: fixed;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 22px 20px 18px;
+  box-shadow: 0 20px 60px rgba(13, 27, 42, 0.25), 0 4px 16px rgba(0,0,0,0.1);
+  z-index: 10001;
+  text-align: center;
+}
+
+.tour-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #F5F5F5;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tour-close-btn:hover { background: #E8EDF2; }
+
+/* Glowing highlight effect for active tour elements (Nyala!) */
+.tour-highlighted-active {
+  position: relative !important;
+  z-index: 10002 !important;
+  background-color: #FFFFFF !important;
+  color: #0284C7 !important;
+  box-shadow: 0 0 25px rgba(112, 214, 255, 0.95), 0 0 5px rgba(112, 214, 255, 0.5) !important;
+  border-radius: 12px !important;
+  transform: scale(1.05) !important;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.tour-tooltip-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: #0D1B2A;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.tour-tooltip-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.tour-dots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #CBD5E1;
+  transition: all 0.2s ease;
+}
+
+.tour-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: #70D6FF;
+}
+
+.tour-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.tour-btn-skip {
+  padding: 8px 14px;
+  border-radius: 9999px;
+  background: #F5F5F5;
+  border: 1px solid #E8EDF2;
+  color: #64748B;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tour-btn-skip:hover { background: #E8EDF2; }
+
+.tour-btn-next {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #70D6FF, #FF70A6);
+  border: none;
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.tour-btn-next:hover { opacity: 0.9; }
+
+/* ============================================
+   LATIHAN SOAL — NEW LAYOUT (Pak Ganjar)
+   ============================================ */
+
+/* Full-screen container (tidak pakai PageWrapper) */
+.latihan-full-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  background: #FAFAF8;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Top Bar ── */
+.latihan-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 52px;
+  background: #FFFFFF;
+  border-bottom: 0.5px solid #E8EDF2;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.latihan-topbar-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+/* Timer */
+.latihan-timer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #F0FAFF;
+  border: 1px solid #B9ECFF;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-family: 'Plus Jakarta Sans', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: #00A3E8;
+  min-width: 78px;
+  transition: all 0.3s ease;
+}
+
+.latihan-timer.danger {
+  background: #FFF0F6;
+  border-color: #FFD6E8;
+  color: #F43F5E;
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Flag Button */
+.latihan-flag-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid #E8EDF2;
+  background: #F5F5F5;
+  color: #64748B;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 42px;
+  justify-content: center;
+}
+
+.latihan-flag-btn.active {
+  background: #FFFBEB;
+  border-color: #FFE9A0;
+  color: #D97706;
+}
+
+/* ── Progress Strip ── */
+.latihan-progress-strip {
+  height: 3px;
+  background: #E8EDF2;
+  flex-shrink: 0;
+}
+
+.latihan-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #70D6FF, #FF70A6);
+  border-radius: 0 9999px 9999px 0;
+  transition: width 0.4s ease;
+}
+
+/* ── Soal Area (scrollable) ── */
+.latihan-soal-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Option: Selected State (bukan benar/salah) ── */
+.option-btn.selected {
+  background: #F0FAFF;
+  border-color: #70D6FF;
+  color: #0082BA;
+}
+
+.option-letter.selected {
+  background: #70D6FF;
+  color: #FFFFFF;
+}
+
+.option-check-icon {
+  margin-left: auto;
+  font-size: 14px;
+  color: #00A3E8;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Bottom Section ── */
+.latihan-bottom-section {
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border-top: 0.5px solid #E8EDF2;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Prev/Next Buttons */
+.latihan-nav-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.latihan-nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid #E8EDF2;
+  background: #F5F5F5;
+  color: #64748B;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.latihan-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.latihan-nav-btn.primary {
+  background: #0D1B2A;
+  border-color: #0D1B2A;
+  color: #FFFFFF;
+}
+
+.latihan-nav-btn.submit {
+  background: linear-gradient(135deg, #70D6FF, #FF70A6);
+  border-color: transparent;
+  color: #FFFFFF;
+}
+
+/* Legend */
+.soal-nav-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.legend-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid #E8EDF2;
+}
+
+.legend-box.empty    { background: #F5F5F5; border-color: #E8EDF2; }
+.legend-box.answered { background: #70D6FF; border-color: #45C8FF; }
+.legend-box.flagged  { background: #FFD670; border-color: #FFE9A0; }
+
+/* Soal Nav Bar (scrollable horizontal) */
+.soal-nav-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 2px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Kotak nomor soal */
+.soal-nav-box {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  border: 1.5px solid #E8EDF2;
+  background: #F5F5F5;
+  color: #64748B;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.soal-nav-box.answered {
+  background: #70D6FF;
+  border-color: #45C8FF;
+  color: #FFFFFF;
+}
+
+.soal-nav-box.flagged {
+  background: #FFD670;
+  border-color: #E8B800;
+  color: #7A5F00;
+}
+
+.soal-nav-box.active {
+  box-shadow: 0 0 0 2.5px #0D1B2A;
+  border-color: #0D1B2A;
+  transform: scale(1.1);
+}
+
+/* Submit Button */
+.latihan-submit-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px;
+  border-radius: 12px;
+  background: #0D1B2A;
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  position: relative;
+}
+
+.latihan-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.submit-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #F43F5E;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  margin-left: 4px;
+}
+
+/* ── Modal Konfirmasi ── */
+.latihan-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 42, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.latihan-modal {
+  background: #FFFFFF;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 430px;
+  text-align: center;
+}
+
+.modal-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #FFFBEB;
+  border: 1px solid #FFE9A0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  border: none;
+}
+
+.modal-btn.cancel {
+  background: #F5F5F5;
+  color: #64748B;
+  border: 1px solid #E8EDF2;
+}
+
+.modal-btn.confirm {
+  background: #0D1B2A;
+  color: #FFFFFF;
+}
+
+/* ============================================
+   HASIL LATIHAN — REVIEW CARDS
+   ============================================ */
+
+.hasil-hero-card {
+  background: #FFFFFF;
+  border: 1px solid #E8EDF2;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.hasil-hero-bar {
+  height: 4px;
+  width: 100%;
+}
+
+/* Card per soal di halaman hasil */
+.review-soal-card {
+  border-radius: 14px;
+  border: 1px solid #E8EDF2;
+  background: #FFFFFF;
+  padding: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.review-soal-card.benar {
+  background: #F0FAFF;
+  border-color: #B9ECFF;
+}
+
+.review-soal-card.salah {
+  background: #FFF8F8;
+  border-color: #FFD6E8;
+}
+
+/* Badge benar/salah bulat */
+.review-status-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.review-status-badge.benar { background: #00A3E8; color: #FFFFFF; }
+.review-status-badge.salah { background: #F43F5E; color: #FFFFFF; }
+
+/* Opsi A/B/C/D di halaman hasil */
+.review-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.review-option.correct {
+  background: #F0FDF4;
+  border-color: #BBF7D0;
+}
+
+.review-option.wrong {
+  background: #FFF0F6;
+  border-color: #FFD6E8;
+}
+
+.review-option-letter {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #F5F5F5;
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.review-option.correct .review-option-letter {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.review-option.wrong .review-option-letter {
+  background: #FFD6E8;
+  color: #E8508A;
+}
+
+.review-option-text {
+  display: block;
+  font-size: 12px;
+  color: #0D1B2A;
+  line-height: 1.5;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.review-option-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  margin-top: 3px;
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+.review-option-badge.correct {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.review-option-badge.wrong {
+  background: #FFD6E8;
+  color: #E8508A;
+}
+
+/* ============================================
+   LATIHAN SOAL — Responsive overrides (Cascades Last)
+   ============================================ */
+@media (min-width: 768px) {
+  .latihan-full-screen {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .latihan-topbar {
+    padding: 0 24px !important;
+  }
+  .latihan-soal-area {
+    padding: 24px 32px !important;
+  }
+  .latihan-bottom-section {
+    padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) !important;
+  }
+  .hasil-review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Exam Focus Mode: Center a premium wide paper sheet on tablet/desktop, no sidebars */
+  .app-shell--centered:has(.latihan-exam-focus) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F8FAFC !important;
+    min-height: 100dvh;
+    width: 100%;
+  }
+  .app-content--centered:has(.latihan-exam-focus) {
+    max-width: 960px !important;
+    width: 100% !important;
+    background: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(13, 27, 42, 0.06);
+    border: 1px solid var(--color-border);
+    margin: 40px auto !important;
+    overflow: hidden;
+  }
+  .latihan-exam-focus {
+    max-width: 960px !important;
+    width: 100% !important;
+  }
+}
+

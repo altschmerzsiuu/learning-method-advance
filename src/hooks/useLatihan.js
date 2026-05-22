@@ -59,15 +59,15 @@ export async function simpanHasilLatihan(userId, jawabanUser, soalList) {
   let benar = 0;
 
   const detail = soalList.map((soal, i) => {
-    // answer_options is now normalized by getSoalLatihan
+    // answer_options is normalized by getSoalLatihan
     const jawabanBenar = soal.answer_options.find(o => o.is_correct);
     const pilihanUser = jawabanUser[i];
     const isBenar = pilihanUser?.id === jawabanBenar?.id;
     if (isBenar) benar++;
     return {
       soal_id: soal.id,
-      pilihan_user: pilihanUser?.option_text,
-      jawaban_benar: jawabanBenar?.option_text,
+      pilihan_user: pilihanUser?.id ?? null,       // simpan ID agar bisa di-lookup di UI
+      jawaban_benar: jawabanBenar?.id ?? null,     // simpan ID jawaban benar
       is_benar: isBenar,
     };
   });

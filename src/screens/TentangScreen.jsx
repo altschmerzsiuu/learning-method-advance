@@ -3,7 +3,7 @@ import { Info, Code, Mail } from 'lucide-react';
 
 export default function TentangScreen() {
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       <TopBar title="Tentang explay." showBack />
 
       <div className="container py-6 px-4 flex flex-col gap-6">

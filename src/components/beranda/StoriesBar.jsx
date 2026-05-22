@@ -14,7 +14,7 @@ export default function StoriesBar({ progress = {} }) {
   const navigate = useNavigate();
 
   return (
-    <div className="flex gap-4 px-4 pt-3 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+    <div className="flex gap-4 px-4 pt-3 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory md:hidden">
       {topiks.map(t => {
         const status = progress[t.id]?.status || (t.id === 'pengenalan' ? 'active' : 'locked');
         const isDone = status === 'done';

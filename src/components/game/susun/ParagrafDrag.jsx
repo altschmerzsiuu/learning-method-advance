@@ -2,7 +2,6 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export default function ParagrafDrag({ id, teks, status }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -27,14 +26,12 @@ export default function ParagrafDrag({ id, teks, status }) {
   }
 
   return (
-    <motion.div
-      layout // Animasi geser
-      transition={{ duration: 0.2, ease: "easeInOut" }} // Lebih cepet dan nggak mantul
+    <div
       ref={setNodeRef}
       style={style}
       className={`relative p-3 rounded-xl border shadow-sm flex items-start gap-2 select-none mb-2
         ${bgClass}
-        ${isDragging ? 'shadow-lg ring-2 ring-primary-300 ring-opacity-50 z-50 scale-[1.02]' : 'z-10'}
+        ${isDragging ? 'shadow-lg ring-2 ring-primary-300 ring-opacity-50 z-50 scale-[1.02] bg-white' : 'z-10'}
         ${status === 'active' ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'}
       `}
       {...attributes}
@@ -46,6 +43,6 @@ export default function ParagrafDrag({ id, teks, status }) {
         {status === 'wrong' ? <span className="text-[10px] font-bold">X</span> : null}
       </div>
       <p className="font-sans text-xs leading-relaxed flex-1">{teks}</p>
-    </motion.div>
+    </div>
   );
 }

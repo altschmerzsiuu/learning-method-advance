@@ -24,7 +24,7 @@ export default function SusunHasilScreen() {
   const isWin = score >= 75;
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       <TopBar title="Hasil Susun Struktur" showBack backPath="/games" />
       
       <div className="container py-6 px-4 flex flex-col min-h-[calc(100dvh-56px)]">

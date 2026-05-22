@@ -10,7 +10,7 @@ export default function GamesScreen() {
   const { profile } = useProfile(user?.id);
 
   return (
-    <PageWrapper bottomNav>
+    <PageWrapper withNav>
       <TopBar onLogout={signOut} userName={profile?.nama || user?.email?.split('@')[0] || 'Pelajar'} />
 
       <div className="container py-6 pb-24 px-4 flex flex-col gap-6">

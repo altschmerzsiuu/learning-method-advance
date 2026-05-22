@@ -53,7 +53,7 @@ export default function CarouselBanner() {
       setCurrent((prev) => (prev + 1) % banners.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [showModal]);
+  }, [showModal, current]);
 
   const banner = banners[current];
   const IconComponent = banner.Icon;
@@ -76,7 +76,18 @@ export default function CarouselBanner() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-full rounded-2xl p-4 flex flex-col justify-between"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(event, info) => {
+              const swipeThreshold = 50;
+              if (info.offset.x < -swipeThreshold) {
+                setCurrent((prev) => (prev + 1) % banners.length);
+              } else if (info.offset.x > swipeThreshold) {
+                setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
+              }
+            }}
+            className="w-full h-full rounded-2xl p-4 flex flex-col justify-between cursor-grab active:cursor-grabbing select-none touch-pan-y"
             style={{ background: banner.bg }}
           >
             <div className="flex gap-3 items-start">
@@ -104,13 +115,15 @@ export default function CarouselBanner() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {banners.map((_, i) => (
-            <div
+            <button
               key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              onClick={() => setCurrent(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer hover:bg-primary-300/80 ${
                 i === current ? 'w-4 bg-primary-300' : 'w-1.5 bg-ink-faint'
               }`}
+              aria-label={`Go to slide ${i + 1}`}
             />
           ))}
         </div>

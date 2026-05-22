@@ -13,7 +13,7 @@ export default function TopBar({
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-50 bg-surface-card border-b border-border h-[56px] flex items-center justify-between px-4 gap-2 shadow-sm">
+    <header className="sticky top-0 z-50 bg-surface-card border-b border-border h-[56px] flex items-center justify-between px-4 gap-2 shadow-sm md:hidden">
       {/* Left Section: Logo + FKIP always shown; back arrow overlays when showBack */}
       <div className="flex items-center shrink-0">
         {showBack ? (
@@ -25,7 +25,7 @@ export default function TopBar({
             <ArrowLeft size={20} strokeWidth={2} className="text-ink" />
           </button>
         ) : (
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 md:hidden">
             <img src="/fkip-logo.jpeg" alt="FKIP Logo" className="h-6 w-auto object-contain rounded-sm" />
             <div className="font-serif font-black text-xl tracking-tight text-primary-300">explay.</div>
           </div>
@@ -51,7 +51,7 @@ export default function TopBar({
         {onLogout && (
           <button 
             onClick={onLogout}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 transition-colors md:hidden"
             title="Keluar"
           >
             <LogOut size={16} className="text-rose-500" />

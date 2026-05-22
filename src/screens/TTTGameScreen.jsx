@@ -50,7 +50,7 @@ export default function GameScreen() {
   if (!setupData) return null;
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav={true}>
       <TopBar title="Think-Tac-Toe" onBack={handleBack} backIcon="×" />
       
       <div className="flex flex-col h-[calc(100vh-52px)] bg-bg-light relative">

@@ -20,7 +20,7 @@ export default function MateriListScreen() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { progress, loading } = useProgress(user?.id);
-  const { streak } = useStreak(user?.id);
+  const { totalXP } = useStreak();
   const { profile } = useProfile(user?.id);
 
   if (loading) return <div className="p-6 text-center text-ink-muted">Memuat...</div>;
@@ -28,8 +28,8 @@ export default function MateriListScreen() {
   const totalCompleted = materiData.filter(m => progress[m.id]?.status === 'done').length;
 
   return (
-    <PageWrapper bottomNav>
-      <TopBar xp={streak?.total_xp || 0} onLogout={signOut} userName={profile?.nama || user?.email?.split('@')[0] || 'Pelajar'} />
+    <PageWrapper withNav>
+      <TopBar xp={totalXP || 0} onLogout={signOut} userName={profile?.nama || user?.email?.split('@')[0] || 'Pelajar'} />
 
       <div className="w-full py-6 pb-24 px-4 flex flex-col gap-6">
         

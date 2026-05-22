@@ -1,13 +1,15 @@
 // src/components/ui/PageWrapper.jsx
 import { motion } from 'framer-motion';
 import BottomNav from './BottomNav';
+import DesktopSidebar from './DesktopSidebar';
+import DesktopStatsPanel from './DesktopStatsPanel';
 
 const pageVariants = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 10 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.25, ease: 'easeOut' },
+    transition: { duration: 0.22, ease: 'easeOut' },
   },
   exit: {
     opacity: 0,
@@ -16,23 +18,53 @@ const pageVariants = {
   },
 };
 
-export default function PageWrapper({ children, className = '', bottomNav = false }) {
+/**
+ * PageWrapper — responsive shell layout.
+ *
+ * withNav=false (default) → centered 430px layout (auth, quiz, game)
+ * withNav=true            → sidebar kiri + konten + (desktop) panel kanan
+ *
+ * PENTING: children hanya di-render SEKALI — tidak ada double render.
+ * Sidebar dan panel dikontrol via CSS breakpoint, bukan conditional JS render.
+ *
+ * Mobile (<768px)  : sidebar hidden, konten centered max 430px
+ * Tablet (768px+)  : sidebar 200px muncul, konten melebar
+ * Desktop (1024px+): sidebar 220px + konten + panel stats 260px
+ */
+export default function PageWrapper({ children, className = '', withNav = false, bottomNav = false }) {
+  // Support prop lama `bottomNav` untuk backwards compat
+  const showNav = withNav || bottomNav;
+
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-dvh flex flex-col bg-[#F8FAFC]" // Background luar abu-abu tipis biar estetik
+      className={`app-shell ${showNav ? 'app-shell--nav' : 'app-shell--centered'}`}
     >
-      {/* Konten dikunci ukuran HP (430px) dan ditaruh di tengah */}
-      <div className="w-full max-w-[430px] mx-auto min-h-dvh bg-white flex flex-col shadow-sm relative">
+      {/* ── SIDEBAR (tablet/desktop, hanya jika withNav) ── */}
+      {showNav && (
+        <aside className="app-sidebar">
+          <DesktopSidebar />
+        </aside>
+      )}
+
+      {/* ── KONTEN UTAMA — render SEKALI saja ──────────── */}
+      <div className={`app-content ${showNav ? 'app-content--nav' : 'app-content--centered'}`}>
         <main className={`flex-1 flex flex-col ${className}`}>
           {children}
         </main>
-        
-        {bottomNav && <BottomNav />}
+        {/* BottomNav hanya muncul di mobile */}
+        {showNav && <BottomNav />}
       </div>
+
+      {/* ── PANEL KANAN (desktop only, hanya jika withNav) */}
+      {showNav && (
+        <aside className="app-stats">
+          <DesktopStatsPanel />
+        </aside>
+      )}
     </motion.div>
   );
 }

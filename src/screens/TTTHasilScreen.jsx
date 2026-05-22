@@ -9,16 +9,16 @@ import { checkAndAwardBadges, triggerBadgeToast } from '../lib/badgeChecker';
 
 // DAFTAR VIDEO (Nanti Ara ganti pake Link dari Supabase Storage ya lyy!)
 const WIN_VIDEOS = [
-  'MASUKKAN_LINK_URL_VIDEO_1_DARI_SUPABASE_DI_SINI',
-  'MASUKKAN_LINK_URL_VIDEO_2_DARI_SUPABASE_DI_SINI',
-  'MASUKKAN_LINK_URL_VIDEO_3_DARI_SUPABASE_DI_SINI'
+  'https://mgngrmdwuqsalrkaxhbt.supabase.co/storage/v1/object/public/game-assets/video1.mp4',
+  'https://mgngrmdwuqsalrkaxhbt.supabase.co/storage/v1/object/public/game-assets/video2.mp4',
+  'https://mgngrmdwuqsalrkaxhbt.supabase.co/storage/v1/object/public/game-assets/video3.mp4'
 ];
 
 // DAFTAR MUSIK (Nanti Ara ganti pake Link dari Supabase Storage ya lyy!)
 const WIN_SONGS = [
-  'MASUKKAN_LINK_URL_MUSIK_1_DARI_SUPABASE_DI_SINI',
-  'MASUKKAN_LINK_URL_MUSIK_2_DARI_SUPABASE_DI_SINI',
-  'MASUKKAN_LINK_URL_MUSIK_3_DARI_SUPABASE_DI_SINI'
+  'https://mgngrmdwuqsalrkaxhbt.supabase.co/storage/v1/object/public/game-assets/_mejikuhibiniu.mp3',
+  'https://mgngrmdwuqsalrkaxhbt.supabase.co/storage/v1/object/public/game-assets/bintanglima.mp3',
+  'https://mgngrmdwuqsalrkaxhbt.supabase.co/storage/v1/object/public/game-assets/kasihababa.mp3'
 ];
 
 function hitungXP(mode, result, difficulty) {
@@ -96,7 +96,9 @@ export default function TTTHasilScreen() {
             user_id: session.user.id,
             mode: mode === 'solo' ? 'solo' : 'team',
             result: resultStr,
-            xp_earned: earnedXp
+            xp_earned: earnedXp,
+            soal_benar: 0,
+            soal_total: 0
           });
           
           await supabase.rpc('increment_xp', { user_id: session.user.id, amount: earnedXp });
@@ -144,7 +146,7 @@ export default function TTTHasilScreen() {
   };
 
   return (
-    <PageWrapper className={resultStatus === 'menang' ? 'bg-[#F0FAFF]' : 'bg-surface'}>
+    <PageWrapper withNav className={resultStatus === 'menang' ? 'bg-[#F0FAFF]' : 'bg-surface'}>
       <TopBar title="Hasil Game" showBack backPath="/games" />
 
       <div className="w-full py-6 px-4 flex flex-col min-h-[calc(100dvh-56px)]">
@@ -164,7 +166,7 @@ export default function TTTHasilScreen() {
                   </h1>
                   <p className="font-sans text-sm text-ink-muted">Tonton perayaan kemenanganmu! 🎉</p>
                 </motion.div>
-                <div className="w-full aspect-video bg-black rounded-3xl overflow-hidden relative shadow-lg">
+                <div className="w-full max-w-md aspect-square bg-black rounded-3xl overflow-hidden relative shadow-lg">
                   {/* Tampilkan video jika link sudah diganti */}
                   {!randomVideo.includes('MASUKKAN_LINK') ? (
                     <video
@@ -176,11 +178,8 @@ export default function TTTHasilScreen() {
                       onEnded={handleSkip}
                       className="w-full h-full object-cover"
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-xs text-center p-4">
-                      Link video belum dipasang lyy. <br/>Silakan upload ke Supabase Storage dulu ya!
-                    </div>
-                  )}
+                  ) : (null)
+                  }
                   <button
                     className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 text-white rounded-full text-xs font-bold backdrop-blur-sm border border-white/20"
                     onClick={handleSkip}

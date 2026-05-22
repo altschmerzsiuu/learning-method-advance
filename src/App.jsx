@@ -1,37 +1,59 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 
 // Screens
 import BerandaScreen      from './screens/BerandaScreen';
 import MateriListScreen    from './screens/MateriListScreen';
 import MateriDetailScreen  from './screens/MateriDetailScreen';
-import QuizScreen      from './screens/QuizScreen';
-import HasilQuizScreen from './screens/HasilQuizScreen';
+import QuizScreen          from './screens/QuizScreen';
+import HasilQuizScreen     from './screens/HasilQuizScreen';
 
-import LatihanScreen   from './screens/LatihanScreen';
-import LatihanSoalScreen from './screens/LatihanSoalScreen';
-import HasilLatihanScreen from './screens/HasilLatihanScreen';
+import LatihanScreen       from './screens/LatihanScreen';
+import LatihanSoalScreen   from './screens/LatihanSoalScreen';
+import HasilLatihanScreen  from './screens/HasilLatihanScreen';
 
-import GamesScreen     from './screens/GamesScreen';
-import TTTSetupScreen  from './screens/TTTSetupScreen';
-import TTTGameScreen   from './screens/TTTGameScreen';
-import TTTHasilScreen  from './screens/TTTHasilScreen';
+import GamesScreen         from './screens/GamesScreen';
+import TTTSetupScreen      from './screens/TTTSetupScreen';
+import TTTGameScreen       from './screens/TTTGameScreen';
+import TTTHasilScreen      from './screens/TTTHasilScreen';
 import SusunStrukturScreen from './screens/SusunStrukturScreen';
-import SusunHasilScreen from './screens/SusunHasilScreen';
+import SusunHasilScreen    from './screens/SusunHasilScreen';
 
-import ProfilScreen    from './screens/ProfilScreen';
-import EditProfilScreen from './screens/EditProfilScreen';
+import ProfilScreen        from './screens/ProfilScreen';
+import EditProfilScreen    from './screens/EditProfilScreen';
 
-import TentangScreen   from './screens/TentangScreen';
-import OnboardingScreen from './screens/OnboardingScreen';
+import TentangScreen       from './screens/TentangScreen';
+import OnboardingScreen    from './screens/OnboardingScreen';
 
-import LoginScreen     from './screens/LoginScreen';
-import RegisterScreen  from './screens/RegisterScreen';
-import ProtectedRoute  from './components/auth/ProtectedRoute';
-import { AuthProvider } from './hooks/useAuth'; // Tambahkan ini
-import { Toast }      from './components/ui';
-import BadgeToast      from './components/profil/BadgeToast';
+import LoginScreen         from './screens/LoginScreen';
+import RegisterScreen      from './screens/RegisterScreen';
+import ProtectedRoute      from './components/auth/ProtectedRoute';
+import { AuthProvider }    from './hooks/useAuth';
+import { Toast }           from './components/ui';
+import BadgeToast          from './components/profil/BadgeToast';
+import OnboardingTour      from './components/onboarding/OnboardingTour';
+import { useOnboarding }   from './hooks/useOnboarding';
+
+// ── Tour Controller (dirender di dalam AuthProvider) ────────────────────────
+function TourController() {
+  const { shouldAutoStart, markTourSeen } = useOnboarding();
+
+  useEffect(() => {
+    if (shouldAutoStart) {
+      // Sedikit delay agar halaman selesai render dulu
+      const t = setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('explay:start-tour'));
+      }, 800);
+      return () => clearTimeout(t);
+    }
+  }, [shouldAutoStart]);
+
+  return (
+    <OnboardingTour onFinish={() => markTourSeen()} />
+  );
+}
 
 function AppRoutes() {
   const location = useLocation();
@@ -77,6 +99,7 @@ export default function App() {
         <AppRoutes />
         <Toast />
         <BadgeToast />
+        <TourController />
       </AuthProvider>
     </BrowserRouter>
   );

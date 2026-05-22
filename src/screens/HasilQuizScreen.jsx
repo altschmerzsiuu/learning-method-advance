@@ -66,7 +66,7 @@ export default function HasilQuizScreen() {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       <TopBar title="Hasil Kuis" showBack backPath="/materi" />
       <div className="min-h-[calc(100dvh-56px)] flex flex-col items-center justify-center px-4 pb-10">
 

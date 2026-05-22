@@ -67,7 +67,7 @@ export default function EditProfilScreen() {
   if (profileLoading) return <div className="p-6 text-center">Memuat...</div>;
 
   return (
-    <PageWrapper bottomNav>
+    <PageWrapper withNav>
       <TopBar title="Edit Profil" showBack={true} />
       
       <div className="container py-6 pb-32 flex flex-col items-center px-4">

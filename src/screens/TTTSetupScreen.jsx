@@ -38,7 +38,7 @@ export default function TTTSetupScreen() {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       <TopBar title="Think-Tac-Toe" showBack backPath="/games" />
       
       <div className="px-4 py-6 flex flex-col gap-6 pb-24">

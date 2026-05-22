@@ -13,7 +13,7 @@ export default function LatihanScreen() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { progress } = useProgress(user?.id);
-  const { streak } = useStreak(user?.id);
+  const { totalXP } = useStreak();
   const { profile } = useProfile(user?.id);
   const [riwayat, setRiwayat] = useState([]);
   const [loadingRiwayat, setLoadingRiwayat] = useState(true);
@@ -45,9 +45,9 @@ export default function LatihanScreen() {
   }, [user]);
 
   return (
-    <PageWrapper bottomNav>
+    <PageWrapper withNav>
       <TopBar 
-        xp={streak?.total_xp || 0}
+        xp={totalXP || 0}
         userName={profile?.nama || user?.email?.split('@')[0] || 'Pelajar'}
         onLogout={signOut}
       />

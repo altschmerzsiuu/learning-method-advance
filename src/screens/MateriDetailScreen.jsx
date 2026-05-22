@@ -46,7 +46,7 @@ export default function MateriDetailScreen() {
 
   if (!topik) {
     return (
-      <PageWrapper>
+      <PageWrapper withNav>
         <TopBar showBack backPath="/materi" title="Materi" />
         <div className="p-4 text-center pt-16">
           <p className="font-serif text-[18px] font-bold text-ink">Topik tidak ditemukan.</p>
@@ -57,7 +57,7 @@ export default function MateriDetailScreen() {
 
   if (loading) {
     return (
-      <PageWrapper>
+      <PageWrapper withNav>
         <TopBar showBack backPath="/materi" title="Memuat Materi..." />
         <div className="flex items-center justify-center min-h-[calc(100vh-56px)]">
           <div className="w-8 h-8 border-4 border-primary-300 border-t-transparent rounded-full animate-spin" />
@@ -68,7 +68,7 @@ export default function MateriDetailScreen() {
 
   if (status === 'locked') {
     return (
-      <PageWrapper>
+      <PageWrapper withNav>
         <TopBar showBack backPath="/materi" title={topik.judul} />
         <div className="p-4 pt-16 text-center flex flex-col items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-surface-muted flex items-center justify-center">
@@ -91,7 +91,7 @@ export default function MateriDetailScreen() {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       <TopBar
         showBack
         backPath="/materi"

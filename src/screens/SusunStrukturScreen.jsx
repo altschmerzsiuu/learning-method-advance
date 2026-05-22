@@ -80,11 +80,11 @@ export default function SusunStrukturScreen() {
   const allPlaced = items.pool.length === 0;
 
   return (
-    <PageWrapper>
+    <PageWrapper withNav>
       <TopBar title="Susun Struktur" showBack backPath="/games" />
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div className="container py-4 px-4 flex flex-col min-h-[calc(100dvh-56px)] pb-24">
+        <div className="container py-4 px-4 flex flex-col pb-24 md:pb-6">
           
           {/* Header */}
           <div className="mb-4">
@@ -133,7 +133,7 @@ export default function SusunStrukturScreen() {
           </div>
 
           {/* Cek Tombol */}
-          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-4 bg-white border-t border-border z-40">
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-4 bg-white border-t border-border z-40 md:static md:left-auto md:translate-x-0 md:w-full md:max-w-[240px] md:mx-auto md:p-0 md:bg-transparent md:border-none md:z-auto md:mt-6 susun-bottom-bar">
             {hasChecked ? (
               <Button fullWidth disabled className="bg-surface-muted text-ink-muted border-none">
                 Menilai...
